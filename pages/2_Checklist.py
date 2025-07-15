@@ -100,12 +100,13 @@ def renderizar_item(row: pd.Series) -> dict:
         if imagem is not None:
             # Define o diretório onde será salvo
             pasta_destino = f"assets/image/{st.session_state['nome']}-{st.session_state['cargo']}"
-
-            # Cria a pasta se ela não existir
             os.makedirs(pasta_destino, exist_ok=True)
-            
-            # Nome do Arquivo
-            nome_arquivo = f"image_{row['id_itens_checklist']}_{st.session_state['nome']}"
+
+            # Extrai a extensão do arquivo original
+            extensao = os.path.splitext(imagem.name)[1]  # .jpg, .png, etc.
+
+            # Define o nome do arquivo com extensão
+            nome_arquivo = f"image_{row['id_itens_checklist']}_{st.session_state['nome']}{extensao}"
 
             # Caminho completo do arquivo no disco
             caminho_arquivo = os.path.join(pasta_destino, nome_arquivo)
