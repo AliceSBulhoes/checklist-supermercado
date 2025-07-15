@@ -1,20 +1,25 @@
 # Importando bibliotecas necessárias
 import streamlit as st
 import time
-from utils.fetch_json import fetch_json_data
-
+import pandas as pd
 
 def login() -> bool:
-    """Função para realizar o login do usuário."""
-    st.title("Login")
-    # Input para o nome do usuário
-    nome = st.text_input("Nome do usuário")
-    # Input do usuário para o cargo
-    cargo = st.text_input("Cargo")
-    # Botão para realizar o login
-    btn = st.button("Entrar")
+    """
+    Renderiza a interface de login do sistema.
+    Coleta nome e cargo do usuário, valida as informações e armazena o estado de login na sessão.
 
-    df_funcionarios = fetch_json_data('data/funcionarios.json')
+    Retorna:
+        bool: True se o login for bem-sucedido, False caso contrário.
+    """
+    st.title("Login")
+
+    # Inputs do usuário
+    nome = st.text_input("Nome do usuário")
+    cargo = st.text_input("Cargo")
+    btn = st.button("Entrar")  # Botão para confirmar login
+
+    # Carrega os dados de funcionários do arquivo JSON
+    df_funcionarios = pd.read_json('data/funcionarios.json')
 
     if btn:
         # Verifica se há um funcionário com nome e cargo correspondentes
@@ -22,28 +27,30 @@ def login() -> bool:
             (df_funcionarios['nome'].str.lower() == nome.strip().lower()) &
             (df_funcionarios['cargo'].str.lower() == cargo.strip().lower())
         ]
-        # Se houver correspondência, define o estado de sessão e redireciona
+
         if not match.empty:
-            # Define o estado de sessão com os dados do funcionário
+            # Se encontrar correspondência, salva os dados na sessão
             st.session_state['logged_in'] = True
             st.session_state['cargo'] = match.iloc[0]['cargo']
             st.session_state['nome'] = match.iloc[0]['nome']
-            # Exibe uma mensagem de sucesso e redireciona para a página inicial
+
+            # Mensagem de sucesso e redirecionamento
             st.success("Login bem-sucedido!")
-            # Aguarda 2 segundos antes de redirecionar
-            time.sleep(2)
-            # Redireciona para a página inicial
+            time.sleep(2)  # Espera 2 segundos antes de redirecionar
             st.switch_page("./pages/1_home.py")
             return True
         else:
-            # Se não houver correspondência, exibe uma mensagem de erro
+            # Exibe erro se não encontrou correspondência
             st.error("Nome ou cargo inválido. Tente novamente.")
 
     return False
 
 
 def configura_pagina() -> None:
-    """Configurações da página Streamlit."""
+    """
+    Configura a interface visual da página de login.
+    Define título, ícone, layout e estado da barra lateral.
+    """
     st.set_page_config(
         page_title="Login - Checklist Streamlit",
         page_icon=":clipboard:",
@@ -53,16 +60,19 @@ def configura_pagina() -> None:
 
 
 def main() -> None:
-    """Função principal para executar o aplicativo Streamlit."""
-    # Configurações da página
+    """
+    Função principal da aplicação.
+    Verifica se o usuário já está logado e redireciona para a home, ou exibe o formulário de login.
+    """
     configura_pagina()
-    # Verifica se o usuário já está logado
-    if 'logged_in' in st.session_state and st.session_state['logged_in']:
-        # Se já estiver logado, redireciona para a página principal
+
+    # Se o usuário já estiver logado, redireciona para a home
+    if st.session_state.get('logged_in'):
         st.switch_page("./pages/1_home.py")
     else:
-        # Se não estiver logado, chama a função de login
         login()
 
+
+# Executa a função principal apenas se o script for chamado diretamente
 if __name__ == "__main__":
     main()
