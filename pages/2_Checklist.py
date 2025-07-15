@@ -43,8 +43,8 @@ def checklist() -> None:
 
         if erros:
             # Mostra os erros encontrados na validação
-            for erro in erros:
-                st.error(erro)
+            # for erro in erros:
+            #     st.error(erro)
             st.warning("Preencha todos os campos obrigatórios antes de salvar.")
         else:
             salvar_respostas(respostas)
@@ -123,17 +123,27 @@ def renderizar_item(row: pd.Series) -> dict:
         }
 
 
-def validar_respostas(respostas:list) -> list:
+def validar_respostas(respostas: list) -> list:
     """
-    Valida se todos os itens obrigatórios possuem imagem anexada.
-
-    Parâmetros:
-        respostas (list): Lista de dicionários contendo as respostas preenchidas.
+    Valida se TODOS os itens foram:
+    - Marcados como concluídos
+    - E possuem imagem de fato salva no disco
 
     Retorna:
-        list: Lista de mensagens de erro (strings), se houver.
+        list: Uma única mensagem de erro, caso alguma condição falhe.
     """
-    return [f"Imagem obrigatória ausente no item: **{r['descricao']}**." for r in respostas if not r['imagem_path']]
+    for r in respostas:
+        # Verifica se o item foi marcado
+        if not r['marcado']:
+            return ["Todos os itens devem estar marcados como concluídos e conter uma imagem obrigatória."]
+        
+        # Verifica se a imagem foi realmente salva
+        imagem_path = r.get("imagem_path", "")
+        if not imagem_path or imagem_path.endswith("/") or not os.path.exists(imagem_path):
+            return ["Todos os itens devem estar marcados como concluídos e conter uma imagem obrigatória."]
+    
+    return []
+
 
 
 def salvar_respostas(respostas: list) -> None:
