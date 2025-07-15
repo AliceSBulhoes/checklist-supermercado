@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import json
 from datetime import datetime
-
+import os
+import time
 
 def configura_pagina() -> None:
     """
@@ -48,6 +49,8 @@ def checklist() -> None:
         else:
             salvar_respostas(respostas)
             st.success("Checklist salvo com sucesso!")
+            time.sleep(2)
+            st.switch_page('./pages/1_Home.py')
 
 
 def carregar_itens_checklist() -> pd.DataFrame:
@@ -88,13 +91,35 @@ def renderizar_item(row: pd.Series) -> dict:
             type=["jpg", "jpeg", "png"],
             key=f"image_{row['id_itens_checklist']}"
         )
+        
+        # Definindo variáveis
+        pasta_destino = ""
+        nome_arquivo = ""
+
+        # Verefica se há uma imagem
+        if imagem is not None:
+            # Define o diretório onde será salvo
+            pasta_destino = f"assets/image/{st.session_state['nome']}-{st.session_state['cargo']}"
+
+            # Cria a pasta se ela não existir
+            os.makedirs(pasta_destino, exist_ok=True)
+            
+            # Nome do Arquivo
+            nome_arquivo = f"image_{row['id_itens_checklist']}_{st.session_state['nome']}"
+
+            # Caminho completo do arquivo no disco
+            caminho_arquivo = os.path.join(pasta_destino, nome_arquivo)
+
+            # Salva a imagem no diretório desejado
+            with open(caminho_arquivo, "wb") as f:
+                f.write(imagem.read())
 
         return {
             "id_itens_checklist": row['id_itens_checklist'],
             "descricao": row['descricao'],
             "marcado": marcado,
             "comentario": comentario,
-            "imagem": imagem.name if imagem else None
+            "imagem_path": f"./{pasta_destino}/{nome_arquivo}"
         }
 
 
@@ -108,7 +133,7 @@ def validar_respostas(respostas:list) -> list:
     Retorna:
         list: Lista de mensagens de erro (strings), se houver.
     """
-    return [f"Imagem obrigatória ausente no item: **{r['descricao']}**." for r in respostas if not r['imagem']]
+    return [f"Imagem obrigatória ausente no item: **{r['descricao']}**." for r in respostas if not r['imagem_path']]
 
 
 def salvar_respostas(respostas: list) -> None:
@@ -142,7 +167,7 @@ def salvar_respostas(respostas: list) -> None:
             "id_itens_checklist": r["id_itens_checklist"],
             "marcado": r["marcado"],
             "comentario": r["comentario"],
-            "imagem": r["imagem"]
+            "imagem_path": r["imagem_path"]
         })
 
     # Salva todos os dados novamente no arquivo

@@ -27,12 +27,12 @@ def historico() -> None:
     try:
         # Tenta carregar as respostas salvas anteriormente
         df = pd.read_json("data/respostas_checklist.json")
-        # Filtro para apenas o funcionário logado
-        df = df[df['nome_funcionario'] == st.session_state['nome']]
 
         if df.empty:
             st.info("Ainda não há checklists salvos.")
         else:
+            # Filtro para apenas o funcionário logado
+            df = df[df['nome_funcionario'] == st.session_state['nome']]
             # Exibe a tabela de registros
             st.dataframe(df)
 

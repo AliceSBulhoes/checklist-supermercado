@@ -3,100 +3,50 @@
         "id": 1,
         "nome_funcionario": "Alice",
         "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:27:05",
+        "data_preenchimento": "2025-07-15 16:56:56",
         "id_itens_checklist": 6,
         "marcado": true,
-        "comentario": "asasasa",
-        "imagem": "hollow.jpg"
+        "comentario": "",
+        "imagem_path": "./assets/image/Alice-Gerente de Loja/image_6_Alice"
     },
     {
         "id": 2,
         "nome_funcionario": "Alice",
         "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:27:05",
+        "data_preenchimento": "2025-07-15 16:56:56",
         "id_itens_checklist": 7,
         "marcado": true,
-        "comentario": "asasa",
-        "imagem": "my-arcane-character.jpeg"
+        "comentario": "",
+        "imagem_path": "./assets/image/Alice-Gerente de Loja/image_7_Alice"
     },
     {
         "id": 3,
         "nome_funcionario": "Alice",
         "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:27:05",
+        "data_preenchimento": "2025-07-15 16:56:56",
         "id_itens_checklist": 8,
         "marcado": true,
-        "comentario": "asasafdsfdfs",
-        "imagem": "humna.jpg"
+        "comentario": "",
+        "imagem_path": "./assets/image/Alice-Gerente de Loja/image_8_Alice"
     },
     {
         "id": 4,
         "nome_funcionario": "Alice",
         "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:27:05",
+        "data_preenchimento": "2025-07-15 16:56:56",
         "id_itens_checklist": 9,
         "marcado": true,
         "comentario": "",
-        "imagem": "hollow.jpg"
+        "imagem_path": "./assets/image/Alice-Gerente de Loja/image_9_Alice"
     },
     {
         "id": 5,
         "nome_funcionario": "Alice",
         "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:27:05",
+        "data_preenchimento": "2025-07-15 16:56:56",
         "id_itens_checklist": 10,
         "marcado": true,
         "comentario": "",
-        "imagem": "duna.png"
-    },
-    {
-        "id": 6,
-        "nome_funcionario": "Alice",
-        "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:31:32",
-        "id_itens_checklist": 6,
-        "marcado": true,
-        "comentario": "sasasasa",
-        "imagem": "humna.jpg"
-    },
-    {
-        "id": 7,
-        "nome_funcionario": "Alice",
-        "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:31:32",
-        "id_itens_checklist": 7,
-        "marcado": true,
-        "comentario": "",
-        "imagem": "WhatsApp Image 2024-04-15 at 22.05.43.jpeg"
-    },
-    {
-        "id": 8,
-        "nome_funcionario": "Alice",
-        "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:31:32",
-        "id_itens_checklist": 8,
-        "marcado": true,
-        "comentario": "",
-        "imagem": "skirk.jpg"
-    },
-    {
-        "id": 9,
-        "nome_funcionario": "Alice",
-        "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:31:32",
-        "id_itens_checklist": 9,
-        "marcado": true,
-        "comentario": "",
-        "imagem": "skirk.jpg"
-    },
-    {
-        "id": 10,
-        "nome_funcionario": "Alice",
-        "cargo_funcionario": "Gerente de Loja",
-        "data_preenchimento": "2025-07-15 16:31:32",
-        "id_itens_checklist": 10,
-        "marcado": true,
-        "comentario": "",
-        "imagem": "Gpdeh9-bEAMeSV6.png"
+        "imagem_path": "./assets/image/Alice-Gerente de Loja/image_10_Alice"
     }
 ]
