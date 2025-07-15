@@ -36,7 +36,7 @@ def login() -> bool:
             # Mensagem de sucesso e redirecionamento
             st.success("Login bem-sucedido!")
             time.sleep(2)  # Espera 2 segundos antes de redirecionar
-            st.switch_page("./pages/1_home.py")
+            st.switch_page("./pages/1_Home.py")
             return True
         else:
             # Exibe erro se não encontrou correspondência
@@ -67,7 +67,7 @@ def main() -> None:
 
     # Se o usuário já estiver logado, redireciona para a home
     if st.session_state.get('logged_in'):
-        st.switch_page("./pages/1_home.py")
+        st.switch_page("./pages/1_Home.py")
     else:
         login()
 
