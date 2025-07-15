@@ -8,14 +8,18 @@ def navbar() -> None:
     btn_logout()
 
 def btn_logout() -> None:
-    """Botão de logout na barra lateral."""
+    """
+    Botão de logout na barra lateral.
+    """
     btn = st.sidebar.button("Sair do Sistema")
     if btn:
         st.session_state.clear()
         st.switch_page("./app.py")
 
 def verifica_login() -> None:
-    """Verifica se o usuário está logado, exibe a navbar ou redireciona para login."""
+    """
+    Verifica se o usuário está logado, exibe a navbar ou redireciona para login.
+    """
     if 'logged_in' in st.session_state and st.session_state['logged_in']:
         navbar()
     else:

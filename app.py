@@ -16,12 +16,11 @@ def login() -> bool:
     # Inputs do usuário
     nome = st.text_input("Nome do usuário")
     cargo = st.text_input("Cargo")
-    btn = st.button("Entrar")  # Botão para confirmar login
 
     # Carrega os dados de funcionários do arquivo JSON
     df_funcionarios = pd.read_json('data/funcionarios.json')
 
-    if btn:
+    if st.button("Entrar"):
         # Verifica se há um funcionário com nome e cargo correspondentes
         match = df_funcionarios[
             (df_funcionarios['nome'].str.lower() == nome.strip().lower()) &
