@@ -1,7 +1,7 @@
 # Importando bibliotecas necessárias
 import streamlit as st
 import time
-from utils.fetch_json import fetch_valid_funcionarios
+from utils.fetch_json import fetch_json_data
 
 
 def login() -> bool:
@@ -14,7 +14,7 @@ def login() -> bool:
     # Botão para realizar o login
     btn = st.button("Entrar")
 
-    df_funcionarios = fetch_valid_funcionarios()
+    df_funcionarios = fetch_json_data('data/funcionarios.json')
 
     if btn:
         # Verifica se há um funcionário com nome e cargo correspondentes
