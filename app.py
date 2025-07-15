@@ -1,14 +1,7 @@
 # Importando bibliotecas necessárias
 import streamlit as st
-import pandas as pd
 import time
-
-# Lista de cargos disponíveis
-CARGOS = [
-    "Repositor",
-    "Gerente de loja",
-    # Adicione outros cargos conforme necessário
-]
+from utils.fetch_json import fetch_valid_funcionarios
 
 def page_config() -> None:
     """Configurações da página Streamlit."""
@@ -18,32 +11,42 @@ def page_config() -> None:
         initial_sidebar_state="expanded"
     )
 
+
 def login() -> bool:
     """Função para realizar o login do usuário."""
     st.title("Login")
+    # Input para o nome do usuário
+    nome = st.text_input("Nome do usuário")
     # Input do usuário para o cargo
     cargo = st.text_input("Cargo")
     # Botão para realizar o login
     btn = st.button("Entrar")
 
+    df_funcionarios = fetch_valid_funcionarios()
+
     if btn:
-        # Verifica se o cargo está na lista de cargos válidos
-        if cargo.capitalize() in CARGOS:
-            # Se o cargo for válido, armazena no estado da sessão
+        # Verifica se há um funcionário com nome e cargo correspondentes
+        match = df_funcionarios[
+            (df_funcionarios['nome'].str.lower() == nome.strip().lower()) &
+            (df_funcionarios['cargo'].str.lower() == cargo.strip().lower())
+        ]
+        # Se houver correspondência, define o estado de sessão e redireciona
+        if not match.empty:
+            # Define o estado de sessão com os dados do funcionário
             st.session_state['logged_in'] = True
+            st.session_state['cargo'] = match.iloc[0]['cargo']
+            st.session_state['nome'] = match.iloc[0]['nome']
+            # Exibe uma mensagem de sucesso e redireciona para a página inicial
             st.success("Login bem-sucedido!")
-            # Armazena o cargo no estado da sessão
-            st.session_state['cargo'] = cargo
-             # Simula um atraso para o feedback do usuário
-            time.sleep(2) 
-            # Redireciona para a página principal ou outra página conforme necessário
+            # Aguarda 2 segundos antes de redirecionar
+            time.sleep(2)
+            # Redireciona para a página inicial
             st.switch_page("./pages/1_home.py")
             return True
-        # Se o cargo não for válido, exibe uma mensagem de erro
         else:
-            st.error("Cargo inválido. Tente novamente.")
-            print("Cargo inválido:", cargo.capitalize())
-            print("Cargos válidos:", CARGOS)
+            # Se não houver correspondência, exibe uma mensagem de erro
+            st.error("Nome ou cargo inválido. Tente novamente.")
+
     return False
 
 def main() -> None:
