@@ -14,6 +14,17 @@ def home() -> None:
     # Botão para iniciar o checklist
     btn_checklist()
 
+
+def configura_pagina() -> None:
+    """Configurações da página Streamlit."""
+    st.set_page_config(
+        page_title="Página Inicial - Checklist Streamlit",
+        page_icon=":clipboard:",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
+
 def btn_checklist() -> None:
     """Função para exibir o botão de checklist."""
     # Botão para iniciar o checklist
@@ -22,12 +33,14 @@ def btn_checklist() -> None:
     # Se o botão for clicado, redireciona para a página de checklist
     if btn:
         st.switch_page("./pages/2_Checklist.py")
-    
+
+
 def main() -> None:
     """Função principal para executar a página inicial."""
-    # Verifica se o usuário está logado
+    configura_pagina()
     verifica_login()
     home()
+
 
 if __name__ == "__main__":
     main()

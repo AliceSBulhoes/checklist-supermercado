@@ -3,14 +3,6 @@ import streamlit as st
 import time
 from utils.fetch_json import fetch_valid_funcionarios
 
-def page_config() -> None:
-    """Configurações da página Streamlit."""
-    st.set_page_config(
-        page_title="Login - Checklist Streamlit",
-        page_icon=":clipboard:",
-        initial_sidebar_state="expanded"
-    )
-
 
 def login() -> bool:
     """Função para realizar o login do usuário."""
@@ -49,10 +41,21 @@ def login() -> bool:
 
     return False
 
+
+def configura_pagina() -> None:
+    """Configurações da página Streamlit."""
+    st.set_page_config(
+        page_title="Login - Checklist Streamlit",
+        page_icon=":clipboard:",
+        layout="centered",
+        initial_sidebar_state="expanded"
+    )
+
+
 def main() -> None:
     """Função principal para executar o aplicativo Streamlit."""
     # Configurações da página
-    page_config()
+    configura_pagina()
     # Verifica se o usuário já está logado
     if 'logged_in' in st.session_state and st.session_state['logged_in']:
         # Se já estiver logado, redireciona para a página principal
