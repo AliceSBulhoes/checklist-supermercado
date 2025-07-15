@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and temporary files
+*.log
+tmp/
+
+# Sensitive information
+.env
+*.key
+*.pem
