@@ -1,0 +1,5 @@
+{
+    "id_funcionario" : [1, 2],
+    "nome": ["Alice", "Bob"],
+    "cargo": ["Gerente de Loja", "Repositor"]
+}
