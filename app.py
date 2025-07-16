@@ -2,6 +2,7 @@
 import streamlit as st
 import time
 import pandas as pd
+from utils.tabelas import criar_tabelas
 
 def login() -> bool:
     """
@@ -64,6 +65,7 @@ def main() -> None:
     Verifica se o usuário já está logado e redireciona para a home, ou exibe o formulário de login.
     """
     configura_pagina()
+    criar_tabelas()
 
     # Se o usuário já estiver logado, redireciona para a home
     if st.session_state.get('logged_in'):
