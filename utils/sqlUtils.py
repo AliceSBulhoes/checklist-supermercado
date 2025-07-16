@@ -3,12 +3,15 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine, text
+import os
 
-# O arquivo checklist.db deve estar em 'data/checklist.db'
-DB_PATH = "data/checklist.db"
-# Criando uma engine
-engine = create_engine(f"sqlite:///{DB_PATH}")
+# Configuração do banco de dados para o Streamlit Cloud
+DB_PATH = os.path.join(os.getcwd(), "checklist.db")
+engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
 
+# Garante que o arquivo existe
+if not os.path.exists(DB_PATH):
+    open(DB_PATH, 'w').close()
 
 def sql_query(query: str) -> pd.DataFrame:
     """
