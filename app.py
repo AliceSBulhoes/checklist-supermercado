@@ -31,6 +31,14 @@ def login() -> bool:
 def verificar_usuario(nome: str, cargo: str) -> bool:
     """
     Função para verificar a autenticação
+
+    Parâmetros:
+        nome: Nome que o usuário colocou no input
+        cargo: Cargo que o usuário colocou no input
+
+    Retorna:
+        bool: True se a verificação for bem-sucedido, False caso contrário.
+
     """
 
     # Para uma lógica mais complexa, poderia adicionar um filtro
