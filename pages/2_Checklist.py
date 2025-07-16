@@ -40,18 +40,22 @@ def checklist() -> None:
 
     # Ao clicar no botão de salvar, realiza a validação e salva as respostas
     if st.button("Salvar Checklist"):
-        erros = validar_respostas(respostas)
+        respostas = list(st.session_state.get("respostas_checklist", {}).values())
 
-        if erros:
-            # Mostra os erros encontrados na validação
-            # for erro in erros:
-            #     st.error(erro)
-            st.warning("Preencha todos os campos obrigatórios antes de salvar.")
+        # Filtra apenas os válidos (feito e imagem existe)
+        respostas_validas = [
+            r for r in respostas
+            if r.get("feito") and r.get("imagem_path") and os.path.exists(r.get("imagem_path"))
+        ]
+
+        if not respostas_validas:
+            st.warning("Nenhum item marcado como feito com imagem encontrada.")
         else:
-            salvar_respostas(respostas)
-            st.success("Checklist salvo com sucesso!")
+            salvar_respostas(respostas_validas)
+            st.success("Itens válidos salvos com sucesso!")
             time.sleep(2)
             st.switch_page('./pages/1_Home.py')
+
 
 
 def carregar_itens_checklist() -> pd.DataFrame:
@@ -76,80 +80,63 @@ def carregar_itens_checklist() -> pd.DataFrame:
 def renderizar_item(row: pd.Series) -> dict:
     """
     Renderiza um único item do checklist com opções interativas.
-    Parâmetros:
-        row (pd.Series): Linha do DataFrame com os dados do item.
-
-    Retorna:
-        dict: Respostas preenchidas pelo usuário (feito, comentário, imagem, etc.).
     """
+
+    item_id = row['id_itens_checklist']
+    estado_antigo = st.session_state.get("respostas_checklist", {}).get(item_id, {})
+
     with st.expander(row['descricao']):
-        # Checkbox para marcar o item como concluído
-        feito = st.checkbox("Item concluído", key=f"check_{row['id_itens_checklist']}")
+        # Checkbox para marcar como feito
+        feito = st.checkbox(
+            "Item concluído",
+            value=estado_antigo.get("feito", False),
+            key=f"check_{item_id}"
+        )
 
-        # Campo opcional de comentário
+        # Comentário opcional
         comentario = ""
-        if st.checkbox("Adicionar comentário", key=f"comment_{row['id_itens_checklist']}"):
-            comentario = st.text_area("Comentário", key=f"input_{row['id_itens_checklist']}")
+        if st.checkbox("Adicionar comentário", key=f"comment_{item_id}"):
+            comentario = st.text_area(
+                "Comentário",
+                value=estado_antigo.get("comentario", ""),
+                key=f"input_{item_id}"
+            )
 
-        # Upload obrigatório de imagem
+        # Upload obrigatório
         imagem = st.file_uploader(
             "Carregar imagem (obrigatória)",
-            type=["jpg", "jpeg", "png"],
-            key=f"image_{row['id_itens_checklist']}"
+            type=["jpg", "png"],
+            key=f"image_{item_id}"
         )
-        
-        # Definindo variáveis
+
         pasta_destino = ""
         nome_arquivo = ""
+        caminho_arquivo = ""
 
-        # Verefica se há uma imagem
         if imagem is not None:
-            # Define o diretório onde será salvo
-            pasta_destino = f"assets/image/{st.session_state['nome']}-{st.session_state['cargo']}"
+            pasta_destino = f"./assets/image/{st.session_state['nome']}-{st.session_state['cargo']}"
             os.makedirs(pasta_destino, exist_ok=True)
-
-            # Extrai a extensão do arquivo original
-            extensao = os.path.splitext(imagem.name)[1]  # .jpg, .png, etc.
-
-            # Define o nome do arquivo com extensão
-            nome_arquivo = f"image_{row['id_itens_checklist']}_{st.session_state['nome']}{extensao}"
-
-            # Caminho completo do arquivo no disco
+            extensao = os.path.splitext(imagem.name)[1]
+            nome_arquivo = f"image_{item_id}_{st.session_state['nome']}{extensao}"
             caminho_arquivo = os.path.join(pasta_destino, nome_arquivo)
-
-            # Salva a imagem no diretório desejado
             with open(caminho_arquivo, "wb") as f:
                 f.write(imagem.read())
+        else:
+            caminho_arquivo = estado_antigo.get("imagem_path", "")
 
-        return {
-            "id_itens_checklist": row['id_itens_checklist'],
+        # Atualiza no session_state
+        if "respostas_checklist" not in st.session_state:
+            st.session_state["respostas_checklist"] = {}
+
+        st.session_state["respostas_checklist"][item_id] = {
+            "id_itens_checklist": item_id,
             "descricao": row['descricao'],
             "feito": feito,
             "comentario": comentario,
-            "imagem_path": f"./{pasta_destino}/{nome_arquivo}"
+            "imagem_path": caminho_arquivo
         }
 
-
-def validar_respostas(respostas: list) -> list:
-    """
-    Valida se TODOS os itens foram:
-    - Marcados como concluídos
-    - E possuem imagem de fato salva no disco
-
-    Retorna:
-        list: Uma única mensagem de erro, caso alguma condição falhe.
-    """
-    for r in respostas:
-        # Verifica se o item foi feito
-        if not r['feito']:
-            return ["Todos os itens devem estar marcados como concluídos e conter uma imagem obrigatória."]
-        
-        # Verifica se a imagem foi realmente salva
-        imagem_path = r.get("imagem_path", "")
-        if not imagem_path or imagem_path.endswith("/") or not os.path.exists(imagem_path):
-            return ["Todos os itens devem estar marcados como concluídos e conter uma imagem obrigatória."]
-    
-    return []
+        return st.session_state["respostas_checklist"][item_id]
 
 
 def main():
