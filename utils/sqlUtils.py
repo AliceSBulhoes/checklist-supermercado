@@ -20,50 +20,123 @@ def sql_query(query: str) -> pd.DataFrame:
     Retorna:
         pd.DataFrama: Um DF com os dados da query
     """
-
     with engine.connect() as conn:
         data = conn.execute(text(query))
         return pd.DataFrame(data.fetchall(), columns=data.keys())
 
+def verificar_checklist_hoje() -> bool:
+    """
+    Verifica se o usuário já enviou um checklist completo hoje
+    
+    Retorna:
+        bool: True se já enviou todos os itens hoje, False caso contrário
+    """
+    nome = st.session_state.get("nome", "desconhecido")
+    cargo = st.session_state.get("cargo", "").lower()
+    hoje = datetime.now().strftime("%Y-%m-%d")
+    
+    # Query para contar itens do cargo
+    query_itens_cargo = """
+    SELECT COUNT(*) 
+    FROM itens_checklist 
+    WHERE LOWER(cargo) = :cargo
+    """
+    
+    # Query para contar respostas do usuário hoje
+    query_respostas_hoje = """
+    SELECT COUNT(*) 
+    FROM respostas_checklist rc
+    JOIN funcionarios f ON rc.id_funcionarios = f.id_funcionario
+    JOIN itens_checklist ic ON rc.id_itens_checklist = ic.id_itens_checklist
+    WHERE f.nome = :nome 
+    AND LOWER(ic.cargo) = :cargo
+    AND DATE(rc.data) = :hoje
+    """
+    
+    with engine.connect() as conn:
+        # Total de itens do cargo
+        total_itens = conn.execute(
+            text(query_itens_cargo), 
+            {"cargo": cargo}
+        ).scalar()
+        
+        # Respostas do usuário hoje
+        respostas_hoje = conn.execute(
+            text(query_respostas_hoje),
+            {"nome": nome, "cargo": cargo, "hoje": hoje}
+        ).scalar()
+        
+    return respostas_hoje >= total_itens if total_itens > 0 else False
+
 
 def salvar_respostas(respostas: list) -> None:
     """
-    Salva as respostas do checklist em um arquivo JSON.
-    Adiciona metadados como nome do funcionário, cargo e data de preenchimento.
-
-    Parâmetros:
-        respostas (list): Lista de dicionários com os dados preenchidos.
+    Salva as respostas do checklist no banco de dados.
+    Atualiza respostas existentes ou insere novas.
     """
-    # Tenta carregar os dados existentes, ou cria uma nova lista
     nome = st.session_state.get("nome", "desconhecido")
     data_preenchimento = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Pega o ID do funcionário (assumindo que nomes são únicos por enquanto)
     with engine.begin() as conn:
-        result = conn.execute(text("SELECT id_funcionario FROM funcionarios WHERE nome = :nome"), {"nome": nome})
+        # Pega o ID do funcionário
+        result = conn.execute(
+            text("SELECT id_funcionario FROM funcionarios WHERE nome = :nome"), 
+            {"nome": nome}
+        )
         row = result.fetchone()
         if not row:
-            st.error("Funcionário não encontrado no banco de dados.")
-            return
+            raise Exception("Funcionário não encontrado no banco de dados")
         id_funcionario = row[0]
 
-        # Para cada resposta, insere no banco
+        # Para cada resposta, verifica se já existe e atualiza/insere
         for r in respostas:
-            conn.execute(text('''
-                INSERT INTO respostas_checklist (
-                    id_itens_checklist, id_funcionarios, feito, comentario, imagem_path, data
-                ) VALUES (
-                    :id_itens_checklist, :id_funcionarios, :feito, :comentario, :imagem_path, :data
-                )
-            '''), {
-                "id_itens_checklist": r["id_itens_checklist"],
-                "id_funcionarios": id_funcionario,
-                "feito": r["feito"],
-                "comentario": r["comentario"],
-                "imagem_path": r["imagem_path"],
+            # Verifica se já existe resposta para este item hoje
+            check_query = """
+            SELECT id_respostas_checklist 
+            FROM respostas_checklist 
+            WHERE id_itens_checklist = :item_id 
+            AND id_funcionarios = :func_id 
+            AND DATE(data) = DATE(:data)
+            """
+            result = conn.execute(text(check_query), {
+                "item_id": r["id_itens_checklist"],
+                "func_id": id_funcionario,
                 "data": data_preenchimento
             })
-
+            existing = result.fetchone()
+            
+            if existing:
+                # Atualiza resposta existente
+                conn.execute(text('''
+                    UPDATE respostas_checklist
+                    SET feito = :feito,
+                        comentario = :comentario,
+                        imagem_path = :imagem_path,
+                        data = :data
+                    WHERE id_respostas_checklist = :id
+                '''), {
+                    "id": existing[0],
+                    "feito": r["feito"],
+                    "comentario": r["comentario"],
+                    "imagem_path": r["imagem_path"],
+                    "data": data_preenchimento
+                })
+            else:
+                # Insere nova resposta
+                conn.execute(text('''
+                    INSERT INTO respostas_checklist (
+                        id_itens_checklist, id_funcionarios, feito, comentario, imagem_path, data
+                    ) VALUES (
+                        :id_itens_checklist, :id_funcionarios, :feito, :comentario, :imagem_path, :data
+                    )
+                '''), {
+                    "id_itens_checklist": r["id_itens_checklist"],
+                    "id_funcionarios": id_funcionario,
+                    "feito": r["feito"],
+                    "comentario": r["comentario"],
+                    "imagem_path": r["imagem_path"],
+                    "data": data_preenchimento
+                })
 
 def tabela_funcionarios() -> None:
     """

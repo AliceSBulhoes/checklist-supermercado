@@ -3,8 +3,9 @@ import streamlit as st
 import pandas as pd
 import os
 import time
+from datetime import datetime
 # Importando funções
-from utils.sqlUtils import sql_query, salvar_respostas
+from utils.sqlUtils import sql_query, salvar_respostas, verificar_checklist_hoje
 
 def configura_pagina() -> None:
     """
@@ -15,7 +16,6 @@ def configura_pagina() -> None:
         page_title="Checklist - Checklist Streamlit",
         page_icon=":clipboard:",
         layout="centered",
-        initial_sidebar_state="expanded"
     )
 
 
@@ -28,6 +28,13 @@ def checklist() -> None:
     st.title("Checklist de Tarefas")
     st.write("Marque os itens concluídos, adicione comentários e carregue a imagem obrigatória.")
 
+    # Verifica se já existe checklist do dia
+    if verificar_checklist_hoje():
+        st.warning("Você já enviou o checklist hoje. Volte amanhã para um novo.")
+        time.sleep(2)
+        st.switch_page('./pages/1_Home.py')
+        return
+
     # Carrega os itens de checklist filtrados pelo cargo do usuário
     df_itens = carregar_itens_checklist()
 
@@ -38,24 +45,32 @@ def checklist() -> None:
     # Renderiza todos os itens e armazena as respostas em uma lista
     respostas = [renderizar_item(row) for _, row in df_itens.iterrows()]
 
-    # Ao clicar no botão de salvar, realiza a validação e salva as respostas
     if st.button("Salvar Checklist"):
-        respostas = list(st.session_state.get("respostas_checklist", {}).values())
+            respostas = list(st.session_state.get("respostas_checklist", {}).values())
 
-        # Filtra apenas os válidos (feito e imagem existe)
-        respostas_validas = [
-            r for r in respostas
-            if r.get("feito") and r.get("imagem_path") and os.path.exists(r.get("imagem_path"))
-        ]
+            # Filtra apenas os válidos (feito e imagem existe)
+            respostas_validas = [
+                r for r in respostas
+                if r.get("feito") and r.get("imagem_path") and os.path.exists(r.get("imagem_path"))
+            ]
 
-        if not respostas_validas:
-            st.warning("Nenhum item marcado como feito com imagem encontrada.")
-        else:
-            salvar_respostas(respostas_validas)
-            st.success("Itens válidos salvos com sucesso!")
-            time.sleep(2)
-            st.switch_page('./pages/1_Home.py')
-
+            if not respostas_validas:
+                st.warning("Nenhum item marcado como feito com imagem encontrada.")
+            else:
+                try:
+                    salvar_respostas(respostas_validas)
+                    
+                    # Verifica se completou todos os itens
+                    df_itens = carregar_itens_checklist()
+                    if df_itens is not None and len(respostas_validas) >= len(df_itens):
+                        st.success("Checklist completo salvo com sucesso!")
+                        time.sleep(2)
+                        st.switch_page('./pages/1_Home.py')
+                    else:
+                        st.success(f"Itens salvos ({len(respostas_validas)}/{len(df_itens)}) - Continue preenchendo o checklist!")
+                        
+                except Exception as e:
+                    st.error(f"Erro ao salvar checklist: {e}")
 
 
 def carregar_itens_checklist() -> pd.DataFrame:
@@ -64,7 +79,7 @@ def carregar_itens_checklist() -> pd.DataFrame:
     Retorna:
       Um DataFrame filtrado ou None caso não haja itens.
     """
-    query = '''SELECT * FROM  itens_checklist'''
+    query = '''SELECT * FROM itens_checklist'''
 
     # Consulta a tabela itens checklist
     df = sql_query(query)
@@ -81,7 +96,6 @@ def renderizar_item(row: pd.Series) -> dict:
     """
     Renderiza um único item do checklist com opções interativas.
     """
-
     item_id = row['id_itens_checklist']
     estado_antigo = st.session_state.get("respostas_checklist", {}).get(item_id, {})
 
@@ -114,7 +128,9 @@ def renderizar_item(row: pd.Series) -> dict:
         caminho_arquivo = ""
 
         if imagem is not None:
-            pasta_destino = f"./assets/image/{st.session_state['nome']}-{st.session_state['cargo']}"
+            # Cria pasta com data atual para organizar as imagens
+            data_atual = datetime.now().strftime("%Y-%m-%d")
+            pasta_destino = f"./assets/image/{data_atual}/{st.session_state['nome']}-{st.session_state['cargo']}"
             os.makedirs(pasta_destino, exist_ok=True)
             extensao = os.path.splitext(imagem.name)[1]
             nome_arquivo = f"image_{item_id}_{st.session_state['nome']}{extensao}"
