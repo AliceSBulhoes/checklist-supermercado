@@ -101,7 +101,7 @@ def tabela_respostas_checklist():
     """
     Cria a tabela 'respostas_checklist' (uma vez
     """
-    
+
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS respostas_checklist (
         id_respostas_checklist INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -110,6 +110,7 @@ def tabela_respostas_checklist():
         feito BOOLEAN,
         comentario VARCHAR(2000),
         imagem_path VARCHAR(200),
+        data DATETIME,
         FOREIGN KEY (id_itens_checklist) REFERENCES itens_checklist(id_itens_checklist),
         FOREIGN KEY (id_funcionarios) REFERENCES funcionarios(id_funcionario)
     );

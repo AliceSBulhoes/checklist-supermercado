@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from components.auth import verifica_login  # Garante que só usuários logados vejam o histórico
-
+from utils.tabelas import sql_query
 
 def configura_pagina() -> None:
     """
@@ -26,13 +26,18 @@ def historico() -> None:
 
     try:
         # Tenta carregar as respostas salvas anteriormente
-        df = pd.read_json("data/respostas_checklist.json")
+        query = '''SELECT funcionarios.nome, funcionarios.cargo, itens_checklist.descricao, respostas_checklist.comentario, respostas_checklist.feito, respostas_checklist.data, respostas_checklist.imagem_path
+        FROM funcionarios, itens_checklist, respostas_checklist
+        WHERE funcionarios.id_funcionario = respostas_checklist.id_funcionarios AND itens_checklist.id_itens_checklist = respostas_checklist.id_itens_checklist
+        '''
+
+        df = sql_query(query)
 
         if df.empty:
             st.info("Ainda não há checklists salvos.")
         else:
             # Filtro para apenas o funcionário logado
-            df = df[df['nome_funcionario'] == st.session_state['nome']]
+            df = df[df['nome'] == st.session_state['nome']]
             # Exibe a tabela de registros
             st.dataframe(df)
 
