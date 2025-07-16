@@ -2,7 +2,8 @@
 import streamlit as st
 import time
 import pandas as pd
-from utils.tabelas import criar_tabelas
+# Importando funções
+from utils.tabelas import criar_tabelas, sql_query
 
 def login() -> bool:
     """
@@ -18,31 +19,48 @@ def login() -> bool:
     nome = st.text_input("Nome do usuário")
     cargo = st.text_input("Cargo")
 
-    # Carrega os dados de funcionários do arquivo JSON
-    df_funcionarios = pd.read_json('data/funcionarios.json')
-
+    # Verifica se cliclou no botãoi
     if st.button("Entrar"):
-        # Verifica se há um funcionário com nome e cargo correspondentes
-        match = df_funcionarios[
-            (df_funcionarios['nome'].str.lower() == nome.strip().lower()) &
-            (df_funcionarios['cargo'].str.lower() == cargo.strip().lower())
-        ]
-
-        if not match.empty:
-            # Se encontrar correspondência, salva os dados na sessão
-            st.session_state['logged_in'] = True
-            st.session_state['cargo'] = match.iloc[0]['cargo']
-            st.session_state['nome'] = match.iloc[0]['nome']
-
-            # Mensagem de sucesso e redirecionamento
-            st.success("Login bem-sucedido!")
-            time.sleep(2)  # Espera 2 segundos antes de redirecionar
-            st.switch_page("./pages/1_Home.py")
+        # Verifica os campos
+        if verificar_usuario(nome, cargo): 
             return True
-        else:
-            # Exibe erro se não encontrou correspondência
-            st.error("Nome ou cargo inválido. Tente novamente.")
 
+    return False
+
+
+def verificar_usuario(nome: str, cargo: str) -> bool:
+    """
+    Função para verificar a autenticação
+    """
+
+    # Para uma lógica mais complexa, poderia adicionar um filtro
+    # no proprio query para fazer essa comparação com WHERE
+    query = '''SELECT * FROM funcionarios'''
+
+    # Chamando função
+    df_funcionarios = sql_query(query)
+
+    # Verifica se há um funcionário com nome e cargo correspondentes
+    match = df_funcionarios[
+        (df_funcionarios['nome'].str.lower() == nome.strip().lower()) &
+        (df_funcionarios['cargo'].str.lower() == cargo.strip().lower())
+    ]
+
+    if not match.empty:
+        # Se encontrar correspondência, salva os dados na sessão
+        st.session_state['logged_in'] = True
+        st.session_state['cargo'] = match.iloc[0]['cargo']
+        st.session_state['nome'] = match.iloc[0]['nome']
+
+        # Mensagem de sucesso e redirecionamento
+        st.success("Login bem-sucedido!")
+        time.sleep(2)  # Espera 2 segundos antes de redirecionar
+        st.switch_page("./pages/1_Home.py")
+        return True
+    else:
+        # Exibe erro se não encontrou correspondência
+        st.error("Nome ou cargo inválido. Tente novamente.")
+    
     return False
 
 
