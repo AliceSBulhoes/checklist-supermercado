@@ -3,19 +3,28 @@ import streamlit as st
 import pandas as pd
 import os
 
-# 🚨 Conexão direta com o SQLite, sem usar secrets.toml
 # O arquivo checklist.db deve estar em 'data/checklist.db'
 DB_PATH = "data/checklist.db"
+# Criando uma engine
 engine = create_engine(f"sqlite:///{DB_PATH}")
 
-def sql_query(query: str):
-    """Executa queries comuns e retorna DataFrame"""
+def sql_query(query: str) -> pd.DataFrame:
+    """
+    Executa queries comuns e retorna DataFrame
+
+    Retorna:
+        pd.DataFrama: Um DF com os dados da query
+    """
+
     with engine.connect() as conn:
         data = conn.execute(text(query))
         return pd.DataFrame(data.fetchall(), columns=data.keys())
 
-def tabela_funcionarios():
-    """Cria a tabela 'funcionarios' com dados default (uma vez)"""
+def tabela_funcionarios() -> None:
+    """
+    Cria a tabela 'funcionarios' com dados default (uma vez)
+    """
+
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS funcionarios (
         id_funcionario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,16 +32,19 @@ def tabela_funcionarios():
         cargo VARCHAR(200)
     );
     '''
+    # Executa a query
     with engine.begin() as conn:
         conn.execute(text(query_criacao))
 
         # Verifica se já tem dados
         total = conn.execute(text("SELECT COUNT(*) FROM funcionarios")).scalar()
+
         if total == 0:
             default_funcionarios = [
                 {'nome': 'Alice', 'cargo': 'Gerente de Loja'},
                 {'nome': 'Bob', 'cargo': 'Repositor'}
             ]
+            # Percorre a lista default
             for pessoa in default_funcionarios:
                 conn.execute(text("""
                     INSERT INTO funcionarios (nome, cargo) 
@@ -40,7 +52,10 @@ def tabela_funcionarios():
                 """), pessoa)
 
 def tabela_itens_checklist():
-    """Cria a tabela 'itens_checklist' com dados default (uma vez)"""
+    """
+    Cria a tabela 'itens_checklist' com dados default (uma vez)
+    """
+
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS itens_checklist (
         id_itens_checklist INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,10 +63,14 @@ def tabela_itens_checklist():
         descricao VARCHAR(2000)
     );
     '''
+
+    # Executa a query
     with engine.begin() as conn:
         conn.execute(text(query_criacao))
-
+        
+         # Verifica se já tem dados
         total = conn.execute(text("SELECT COUNT(*) FROM itens_checklist")).scalar()
+
         if total == 0:
             default_itens_checklist = {
                 'Repositor': [
@@ -70,6 +89,7 @@ def tabela_itens_checklist():
                 ]
             }
 
+            # Percorre o dicionario com valoroes default
             for cargo, descricoes in default_itens_checklist.items():
                 for descricao in descricoes:
                     conn.execute(text("""
@@ -78,7 +98,10 @@ def tabela_itens_checklist():
                     """), {"cargo": cargo, "descricao": descricao})
 
 def tabela_respostas_checklist():
-    """Cria a tabela 'respostas_checklist' (uma vez)"""
+    """
+    Cria a tabela 'respostas_checklist' (uma vez
+    """
+    
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS respostas_checklist (
         id_respostas_checklist INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,11 +114,15 @@ def tabela_respostas_checklist():
         FOREIGN KEY (id_funcionarios) REFERENCES funcionarios(id_funcionario)
     );
     '''
+    # Executa a query
     with engine.begin() as conn:
         conn.execute(text(query_criacao))
 
 def criar_tabelas():
-    """Chama todas as funções de criação"""
+    """
+    Chama todas as funções de criação
+    """
+
     tabela_funcionarios()
     tabela_itens_checklist()
     tabela_respostas_checklist()
