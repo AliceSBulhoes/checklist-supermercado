@@ -1,12 +1,14 @@
-from sqlalchemy import create_engine, text
+# Importando dependencias
 import streamlit as st
 import pandas as pd
-import os
+from datetime import datetime
+from sqlalchemy import create_engine, text
 
 # O arquivo checklist.db deve estar em 'data/checklist.db'
 DB_PATH = "data/checklist.db"
 # Criando uma engine
 engine = create_engine(f"sqlite:///{DB_PATH}")
+
 
 def sql_query(query: str) -> pd.DataFrame:
     """
@@ -19,6 +21,46 @@ def sql_query(query: str) -> pd.DataFrame:
     with engine.connect() as conn:
         data = conn.execute(text(query))
         return pd.DataFrame(data.fetchall(), columns=data.keys())
+
+
+def salvar_respostas(respostas: list) -> None:
+    """
+    Salva as respostas do checklist em um arquivo JSON.
+    Adiciona metadados como nome do funcionário, cargo e data de preenchimento.
+
+    Parâmetros:
+        respostas (list): Lista de dicionários com os dados preenchidos.
+    """
+    # Tenta carregar os dados existentes, ou cria uma nova lista
+    nome = st.session_state.get("nome", "desconhecido")
+    data_preenchimento = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Pega o ID do funcionário (assumindo que nomes são únicos por enquanto)
+    with engine.begin() as conn:
+        result = conn.execute(text("SELECT id_funcionario FROM funcionarios WHERE nome = :nome"), {"nome": nome})
+        row = result.fetchone()
+        if not row:
+            st.error("Funcionário não encontrado no banco de dados.")
+            return
+        id_funcionario = row[0]
+
+        # Para cada resposta, insere no banco
+        for r in respostas:
+            conn.execute(text('''
+                INSERT INTO respostas_checklist (
+                    id_itens_checklist, id_funcionarios, feito, comentario, imagem_path, data
+                ) VALUES (
+                    :id_itens_checklist, :id_funcionarios, :feito, :comentario, :imagem_path, :data
+                )
+            '''), {
+                "id_itens_checklist": r["id_itens_checklist"],
+                "id_funcionarios": id_funcionario,
+                "feito": r["feito"],
+                "comentario": r["comentario"],
+                "imagem_path": r["imagem_path"],
+                "data": data_preenchimento
+            })
+
 
 def tabela_funcionarios() -> None:
     """

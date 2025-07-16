@@ -3,7 +3,7 @@ import streamlit as st
 import time
 import pandas as pd
 # Importando funções
-from utils.tabelas import criar_tabelas, sql_query
+from utils.sqlUtils import criar_tabelas, sql_query
 
 def login() -> bool:
     """

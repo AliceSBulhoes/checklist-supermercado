@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from components.auth import verifica_login  # Garante que só usuários logados vejam o histórico
-from utils.tabelas import sql_query
+from utils.sqlUtils import sql_query
 
 def configura_pagina() -> None:
     """

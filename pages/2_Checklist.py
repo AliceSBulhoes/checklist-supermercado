@@ -1,9 +1,10 @@
+# Importando dependencias
 import streamlit as st
 import pandas as pd
-import json
-from datetime import datetime
 import os
 import time
+# Importando funções
+from utils.sqlUtils import sql_query, salvar_respostas
 
 def configura_pagina() -> None:
     """
@@ -59,11 +60,16 @@ def carregar_itens_checklist() -> pd.DataFrame:
     Retorna:
       Um DataFrame filtrado ou None caso não haja itens.
     """
-    df = pd.read_json('data/itens_checklist.json')
+    query = '''SELECT * FROM  itens_checklist'''
+
+    # Consulta a tabela itens checklist
+    df = sql_query(query)
+
     cargo = st.session_state.get('cargo', '').lower()
 
     # Filtra os itens que correspondem ao cargo do usuário
     df_filtrado = df[df['cargo'].str.lower() == cargo]
+
     return df_filtrado if not df_filtrado.empty else None
 
 
@@ -74,11 +80,11 @@ def renderizar_item(row: pd.Series) -> dict:
         row (pd.Series): Linha do DataFrame com os dados do item.
 
     Retorna:
-        dict: Respostas preenchidas pelo usuário (marcado, comentário, imagem, etc.).
+        dict: Respostas preenchidas pelo usuário (feito, comentário, imagem, etc.).
     """
     with st.expander(row['descricao']):
         # Checkbox para marcar o item como concluído
-        marcado = st.checkbox("Item concluído", key=f"check_{row['id_itens_checklist']}")
+        feito = st.checkbox("Item concluído", key=f"check_{row['id_itens_checklist']}")
 
         # Campo opcional de comentário
         comentario = ""
@@ -118,7 +124,7 @@ def renderizar_item(row: pd.Series) -> dict:
         return {
             "id_itens_checklist": row['id_itens_checklist'],
             "descricao": row['descricao'],
-            "marcado": marcado,
+            "feito": feito,
             "comentario": comentario,
             "imagem_path": f"./{pasta_destino}/{nome_arquivo}"
         }
@@ -134,8 +140,8 @@ def validar_respostas(respostas: list) -> list:
         list: Uma única mensagem de erro, caso alguma condição falhe.
     """
     for r in respostas:
-        # Verifica se o item foi marcado
-        if not r['marcado']:
+        # Verifica se o item foi feito
+        if not r['feito']:
             return ["Todos os itens devem estar marcados como concluídos e conter uma imagem obrigatória."]
         
         # Verifica se a imagem foi realmente salva
@@ -144,46 +150,6 @@ def validar_respostas(respostas: list) -> list:
             return ["Todos os itens devem estar marcados como concluídos e conter uma imagem obrigatória."]
     
     return []
-
-
-
-def salvar_respostas(respostas: list) -> None:
-    """
-    Salva as respostas do checklist em um arquivo JSON.
-    Adiciona metadados como nome do funcionário, cargo e data de preenchimento.
-
-    Parâmetros:
-        respostas (list): Lista de dicionários com os dados preenchidos.
-    """
-    # Tenta carregar os dados existentes, ou cria uma nova lista
-    try:
-        with open("data/respostas_checklist.json", "r", encoding="utf-8") as f:
-            dados_existentes = json.load(f)
-            if not isinstance(dados_existentes, list):
-                dados_existentes = []
-    except (FileNotFoundError, json.JSONDecodeError):
-        dados_existentes = []
-
-    # Coleta dados extras do usuário para salvar junto com cada item
-    nome_funcionario = st.session_state.get("nome", "desconhecido")
-    cargo_funcionario = st.session_state.get("cargo", "desconhecido")
-    data_preenchimento = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    for r in respostas:
-        dados_existentes.append({
-            "id": len(dados_existentes) + 1,
-            "nome_funcionario": nome_funcionario,
-            "cargo_funcionario": cargo_funcionario,
-            "data_preenchimento": data_preenchimento,
-            "id_itens_checklist": r["id_itens_checklist"],
-            "marcado": r["marcado"],
-            "comentario": r["comentario"],
-            "imagem_path": r["imagem_path"]
-        })
-
-    # Salva todos os dados novamente no arquivo
-    with open("data/respostas_checklist.json", "w", encoding="utf-8") as f:
-        json.dump(dados_existentes, f, indent=4, ensure_ascii=False)
 
 
 def main():
