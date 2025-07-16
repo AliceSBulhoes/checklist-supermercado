@@ -1,22 +1,21 @@
-from sqlalchemy import create_engine, inspect, text
+from sqlalchemy import create_engine, text
 import streamlit as st
 import pandas as pd
+import os
 
-CONN = st.connection('checklist_db', type='sql')
+# 🚨 Conexão direta com o SQLite, sem usar secrets.toml
+# O arquivo checklist.db deve estar em 'data/checklist.db'
+DB_PATH = "data/checklist.db"
+engine = create_engine(f"sqlite:///{DB_PATH}")
 
 def sql_query(query: str):
-    """Executa a querry comum"""
-
-    with CONN.session as s:
-        data = s.execute(text(query))
-
-        return pd.DataFrame(data)
+    """Executa queries comuns e retorna DataFrame"""
+    with engine.connect() as conn:
+        data = conn.execute(text(query))
+        return pd.DataFrame(data.fetchall(), columns=data.keys())
 
 def tabela_funcionarios():
-    """
-    Função para criar tabela 'funcionarios' com dados default (apenas uma vez)
-    """
-    # Query para criar a tabela
+    """Cria a tabela 'funcionarios' com dados default (uma vez)"""
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS funcionarios (
         id_funcionario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,33 +23,24 @@ def tabela_funcionarios():
         cargo VARCHAR(200)
     );
     '''
-
-    with CONN.session as s:
-        # Cria a tabela se não existir
-        s.execute(text(query_criacao))
+    with engine.begin() as conn:
+        conn.execute(text(query_criacao))
 
         # Verifica se já tem dados
-        resultado = s.execute(text("SELECT COUNT(*) FROM funcionarios;"))
-        total = resultado.scalar()
-
+        total = conn.execute(text("SELECT COUNT(*) FROM funcionarios")).scalar()
         if total == 0:
-            default_funcionarios = {
-                1: {'nome': 'Alice', 'cargo': 'Gerente de Loja'},
-                2: {'nome': 'Bob', 'cargo': 'Repositor'}
-            }
-
-            # Percorre todas as tabelas
-            for pessoa in default_funcionarios.values():
-                insert_query = text("INSERT INTO funcionarios (nome, cargo) VALUES (:nome, :cargo)")
-                s.execute(insert_query, params=pessoa)
-
-        s.commit()
-
+            default_funcionarios = [
+                {'nome': 'Alice', 'cargo': 'Gerente de Loja'},
+                {'nome': 'Bob', 'cargo': 'Repositor'}
+            ]
+            for pessoa in default_funcionarios:
+                conn.execute(text("""
+                    INSERT INTO funcionarios (nome, cargo) 
+                    VALUES (:nome, :cargo)
+                """), pessoa)
 
 def tabela_itens_checklist():
-    """
-    Função para criar tabela 'itens_checklist' com dados default (apenas uma vez)
-    """
+    """Cria a tabela 'itens_checklist' com dados default (uma vez)"""
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS itens_checklist (
         id_itens_checklist INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,15 +48,10 @@ def tabela_itens_checklist():
         descricao VARCHAR(2000)
     );
     '''
+    with engine.begin() as conn:
+        conn.execute(text(query_criacao))
 
-    with CONN.session as s:
-        # Cria a tabela se não existir
-        s.execute(text(query_criacao))
-
-        # Verifica se a tabela já tem dados
-        resultado = s.execute(text("SELECT COUNT(*) FROM itens_checklist;"))
-        total = resultado.scalar()
-
+        total = conn.execute(text("SELECT COUNT(*) FROM itens_checklist")).scalar()
         if total == 0:
             default_itens_checklist = {
                 'Repositor': [
@@ -85,21 +70,15 @@ def tabela_itens_checklist():
                 ]
             }
 
-            # Insere cada item com seu respectivo cargo
             for cargo, descricoes in default_itens_checklist.items():
                 for descricao in descricoes:
-                    insert_query = text("""
+                    conn.execute(text("""
                         INSERT INTO itens_checklist (cargo, descricao)
                         VALUES (:cargo, :descricao)
-                    """)
-                    s.execute(insert_query, params={"cargo": cargo, "descricao": descricao})
-
-        s.commit()
+                    """), {"cargo": cargo, "descricao": descricao})
 
 def tabela_respostas_checklist():
-    """
-    Função para criar tabela 'respostas_checklist' (apenas uma vez)
-    """
+    """Cria a tabela 'respostas_checklist' (uma vez)"""
     query_criacao = '''
     CREATE TABLE IF NOT EXISTS respostas_checklist (
         id_respostas_checklist INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,18 +91,11 @@ def tabela_respostas_checklist():
         FOREIGN KEY (id_funcionarios) REFERENCES funcionarios(id_funcionario)
     );
     '''
-
-    with CONN.session as s:
-        s.execute(text(query_criacao))
-        s.commit()
-
-
+    with engine.begin() as conn:
+        conn.execute(text(query_criacao))
 
 def criar_tabelas():
-    """Criação das tabelas"""
+    """Chama todas as funções de criação"""
     tabela_funcionarios()
     tabela_itens_checklist()
     tabela_respostas_checklist()
-
-
-
