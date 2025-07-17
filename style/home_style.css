@@ -1,0 +1,38 @@
+/* Título */
+[data-testid="stHeadingWithActionElements"] h1 {
+    font-family: var(--font-mont);
+    font-weight: 800;
+    color: var(--cor-paleta-400);
+    text-transform: uppercase;
+}
+
+/* Textos da pagina inicial*/
+[data-testid="stHeadingWithActionElements"] h4, [data-testid="stHeadingWithActionElements"] h5 {
+    font-family: var(--font-mont);
+    font-weight: 400;
+    color: var(--cor-paleta-500);
+    text-transform: capitalize;
+}
+
+[data-testid="stHeadingWithActionElements"] strong {
+    font-weight: bolder;
+    text-transform: uppercase;
+}
+
+
+/* Botão de Abrir Checklist*/
+.st-key-btn_abrir button{
+    border: 1px solid var(--cor-paleta-300);
+    padding: 0.8rem 2.5rem;
+    background-color: var(--cor-paleta-100);
+    transition: all 0.5s;
+    color: var(--cor-paleta-300);
+}
+
+.st-key-btn_abrir  button:hover{
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+
+}

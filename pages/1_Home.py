@@ -32,6 +32,15 @@ def configura_pagina() -> None:
     )
 
 
+def estilizando_pagina() -> None:
+    """
+    Estilização da página Home com variáveis separadas
+    """
+    with open('./style/variaveis.css') as vars_file, open('./style/home_style.css') as style_file:
+        css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
+        st.markdown(css, unsafe_allow_html=True)
+
+
 def btn_checklist() -> None:
     """
     Exibe o botão para iniciar o checklist.
@@ -39,7 +48,7 @@ def btn_checklist() -> None:
     """
 
     # Botão para Abrir Checklist
-    if st.button(":material/open_in_new: Abrir Checklist Diária"):
+    if st.button(":material/open_in_new: Abrir Checklist Diária", key='btn_abrir'):
         st.switch_page("./pages/2_Checklist.py")
 
 
@@ -48,9 +57,10 @@ def main() -> None:
     Função principal para executar a lógica da página inicial.
     Configura a interface, valida login e exibe conteúdo principal.
     """
-    configura_pagina()
-    verifica_login()  # Verifica se o usuário está logado antes de acessar
-    home()  # Exibe a interface da home
+    configura_pagina()      # Configuração da página
+    estilizando_pagina()    # Função para estilizar a página com CSS
+    verifica_login()        # Verifica se o usuário está logado antes de acessar
+    home()                  # Exibe a interface da home
 
 
 # Executa o app caso este arquivo seja o ponto de entrada principal
