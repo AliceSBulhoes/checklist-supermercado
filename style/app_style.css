@@ -28,10 +28,12 @@
 
 /* Inputs */
 [data-testid="stWidgetLabel"] p{
-    text-transform: uppercase;
     color: var(--cor-paleta-300);
     font-weight: bold;
     font-size: 1.1rem;
+    font-family: var(--font-mont);
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
 [data-baseweb="base-input"], [data-testid="stTextInputRootElement"]{
@@ -45,6 +47,8 @@
     border: 2px solid var(--cor-paleta-100);
     color: var(--cor-paleta-100);
     border-radius: 0.5rem;
+    font-family: var(--font-mont);
+    font-weight: 400;
 }
 
 .st-key-input_login_2 input:focus, .st-key-input_login_1 input:focus {
@@ -72,6 +76,8 @@
 .st-key-btn_entrar p {
     text-transform: uppercase;
     font-weight: bold;
+    font-family: var(--font-mont);
+    font-weight: 500;
 }
 
 
@@ -79,7 +85,7 @@
     border: var(--cor-paleta-100) 2px solid;
     background-color: var(--cor-paleta-400);
     color: var(--cor-paleta-100);
-    transition: all 0.5s;
+    transition: ease 0.5s;
 
 }
 
@@ -87,7 +93,7 @@
     border: var(--cor-paleta-100) 2px solid;
     background-color: var(--cor-paleta-400);
     color: var(--cor-paleta-100);
-    transition: all 0.5s;
+    transition: ease 0.5s;
 
 }
 
@@ -97,5 +103,7 @@
     text-align: center;
     color: var(--cor-paleta-400);
     text-transform: uppercase;
+    font-family: var(--font-mont);
+    font-weight: 400;
 }
 
