@@ -23,7 +23,7 @@ def estilizando_pagina() -> None:
     """
     Estilização da página Home com variáveis separadas
     """
-    with open('./style/variaveis.css') as vars_file, open('./style/home_style.css') as style_file:
+    with open('./style/variaveis.css') as vars_file, open('./style/checklist_style.css') as style_file:
         css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
         st.markdown(css, unsafe_allow_html=True)
 
@@ -34,7 +34,7 @@ def checklist() -> None:
     e salve os dados, após validação obrigatória da imagem.
     """
     st.markdown("# Checklist de Tarefas")
-    st.markdown("Marque os itens concluídos, adicione comentários e carregue a imagem obrigatória.")
+    st.markdown("###### Marque os itens concluídos, adicione comentários e carregue a imagem obrigatória.")
 
     # Verifica se já existe checklist do dia
     if verificar_checklist_hoje():
@@ -53,7 +53,7 @@ def checklist() -> None:
     # Renderiza todos os itens e armazena as respostas em uma lista
     respostas = [renderizar_item(row) for _, row in df_itens.iterrows()]
 
-    if st.button("Salvar Checklist"):
+    if st.button("Salvar Checklist", key="btn_salvar"):
         respostas_validas = []
         inconsistentes = []
 
@@ -157,7 +157,7 @@ def renderizar_item(row: pd.Series) -> dict:
 
         # Se já tem imagem salva, exibe ela
         if estado_antigo.get("imagem_path", ""):
-            st.image(estado_antigo["imagem_path"], width=200, caption="Imagem enviada anteriormente")
+            st.image(estado_antigo["imagem_path"], width=200, caption="Imagem Enviada")
             caminho_arquivo = estado_antigo["imagem_path"]
 
         # Se não tem, exige upload
@@ -193,7 +193,8 @@ def renderizar_item(row: pd.Series) -> dict:
 
 def main():
     """ Função principal do aplicativo. Garante que o usuário esteja logado antes de exibir a checklist."""
-    verifica_login()       # Garante que apenas usuários logados tenham acesso
+    verifica_login()
+    estilizando_pagina()       
     configura_pagina()
     checklist()
 

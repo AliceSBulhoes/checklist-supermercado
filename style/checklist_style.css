@@ -1,0 +1,108 @@
+/* Texto da Checklist */
+/* Título */
+[data-testid="stHeadingWithActionElements"] h1{
+    font-family: var(--font-mont);
+    font-weight: 800;
+    color: var(--cor-paleta-400);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* Subtitulo */
+[data-testid="stMarkdownContainer"] h6{
+    font-family: var(--font-mont);
+    font-weight: 500;
+    color: var(--cor-paleta-400);
+    text-align: center;
+}
+
+/* Bloco do Checklist */
+[data-testid="stExpander"]  .stVerticalBlock{
+    display: flex;
+    align-items: flex-start;
+}
+
+[data-testid="stExpander"] details{
+    border: 2px solid var(--cor-paleta-200);
+}
+
+[data-testid="stExpander"] p{
+    font-family: var(--font-mont);
+    color: var(--cor-paleta-300);
+    font-size: 1rem;
+}
+
+[data-testid="stExpander"] svg[data-testid="stExpanderToggleIcon"]{
+    fill: var(--cor-paleta-300);
+}
+
+/* Checkbox */
+[data-baseweb="checkbox"] span{
+    border: 1px solid var(--cor-paleta-400);
+}
+
+
+/* Imagem */
+[data-testid="stFileUploaderDropzone"] button{
+    border: 1px solid var(--cor-paleta-300);
+    padding: 0.5rem 1.5rem;
+    background-color: var(--cor-paleta-100);
+    transition: all 0.5s;
+    color: var(--cor-paleta-300);
+}
+
+[data-testid="stFileUploaderDropzone"] button:hover{
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+}
+
+[data-testid="stFileUploaderDropzone"] button:focus:not(:active){
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+
+}
+
+/* Imagem Enviada*/
+[data-testid="stExpander"] [data-testid="stImageContainer"]{
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+[data-testid="stExpander"] [data-testid="stImageContainer"] p{
+    color: var(--cor-paleta-500);
+    text-align: start;
+}
+
+/* Botão de Salvar Checklist*/
+.st-key-btn_salvar div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.st-key-btn_salvar button{
+    border: 1px solid var(--cor-paleta-300);
+    padding: 0.8rem 2.5rem;
+    background-color: var(--cor-paleta-100);
+    transition: all 0.5s;
+    color: var(--cor-paleta-300);
+}
+
+.st-key-btn_salvar button:hover{
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+}
+
+.st-key-btn_salvar button:focus:not(:active){
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+
+}
