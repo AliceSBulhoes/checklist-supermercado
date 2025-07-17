@@ -19,6 +19,13 @@ def configura_pagina() -> None:
         layout="centered",
     )
 
+def estilizando_pagina() -> None:
+    """
+    Estilização da página Home com variáveis separadas
+    """
+    with open('./style/variaveis.css') as vars_file, open('./style/home_style.css') as style_file:
+        css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
+        st.markdown(css, unsafe_allow_html=True)
 
 def checklist() -> None:
     """

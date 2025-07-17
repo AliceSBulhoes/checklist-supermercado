@@ -3,21 +3,6 @@ import pandas as pd
 from components.auth import verifica_login  # Função de verificação de login
 import time
 
-def home() -> None:
-    """
-    Exibe a página inicial após o login.
-    Mostra uma mensagem de boas-vindas, o cargo do usuário e o botão para iniciar o checklist.
-    """
-    st.markdown("# Página Inicial")
-    st.markdown(f"#### Bem-vindo(a) ao sistema, **{st.session_state['nome']}**!")
-
-    # Exibe o cargo do usuário se estiver salvo na sessão
-    if 'cargo' in st.session_state:
-        st.markdown(f"##### :material/work: **Cargo**: {st.session_state['cargo']}")
-
-    # Exibe o botão para iniciar o checklist
-    btn_checklist()
-
 
 def configura_pagina() -> None:
     """
@@ -39,6 +24,22 @@ def estilizando_pagina() -> None:
     with open('./style/variaveis.css') as vars_file, open('./style/home_style.css') as style_file:
         css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
         st.markdown(css, unsafe_allow_html=True)
+
+        
+def home() -> None:
+    """
+    Exibe a página inicial após o login.
+    Mostra uma mensagem de boas-vindas, o cargo do usuário e o botão para iniciar o checklist.
+    """
+    st.markdown("# Página Inicial")
+    st.markdown(f"#### Bem-vindo(a) ao sistema, **{st.session_state['nome']}**!")
+
+    # Exibe o cargo do usuário se estiver salvo na sessão
+    if 'cargo' in st.session_state:
+        st.markdown(f"##### :material/work: **Cargo**: {st.session_state['cargo']}")
+
+    # Exibe o botão para iniciar o checklist
+    btn_checklist()
 
 
 def btn_checklist() -> None:

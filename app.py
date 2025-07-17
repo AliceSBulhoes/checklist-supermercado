@@ -5,6 +5,29 @@ import pandas as pd
 # Importando funções
 from utils.sqlUtils import criar_tabelas, sql_query
 
+
+def configura_pagina() -> None:
+    """
+    Configura a interface visual da página de login.
+    Define título, ícone, layout e estado da barra lateral.
+    """
+    st.set_page_config(
+        page_title="Login",
+        page_icon=":material/login:",
+        initial_sidebar_state="collapsed",
+        layout="centered"
+    )
+
+
+def estilizando_pagina() -> None:
+    """
+    Estilização da página de Login com variáveis separadas
+    """
+    with open('./style/variaveis.css') as vars_file, open('./style/app_style.css') as style_file:
+        css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
+        st.markdown(css, unsafe_allow_html=True)
+        
+
 def login() -> bool:
     """
     Renderiza a interface de login do sistema.
@@ -27,13 +50,6 @@ def login() -> bool:
 
     return False
 
-def estilizando_pagina() -> None:
-    """
-    Estilização da página de Login com variáveis separadas
-    """
-    with open('./style/variaveis.css') as vars_file, open('./style/app_style.css') as style_file:
-        css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
-        st.markdown(css, unsafe_allow_html=True)
 
 def verificar_usuario(nome: str, cargo: str) -> bool:
     """
@@ -77,19 +93,6 @@ def verificar_usuario(nome: str, cargo: str) -> bool:
         st.error("Nome ou cargo inválido. Tente novamente.")
     
     return False
-
-
-def configura_pagina() -> None:
-    """
-    Configura a interface visual da página de login.
-    Define título, ícone, layout e estado da barra lateral.
-    """
-    st.set_page_config(
-        page_title="Login",
-        page_icon=":material/login:",
-        initial_sidebar_state="collapsed",
-        layout="centered"
-    )
 
 
 def main() -> None:
