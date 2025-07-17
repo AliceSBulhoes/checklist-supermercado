@@ -139,7 +139,9 @@ def renderizar_item(row: pd.Series) -> dict:
 
         # Comentário opcional
         comentario = ""
-        if st.checkbox("Adicionar comentário", key=f"comment_{item_id}"):
+        existe_com = bool(estado_antigo.get("comentario", ""))
+        
+        if st.checkbox("Adicionar comentário",value=existe_com, key=f"comment_{item_id}"):
             comentario = st.text_area(
                 "Comentário",
                 value=estado_antigo.get("comentario", ""),
