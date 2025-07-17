@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from components.auth import verifica_login  # Função de verificação de login
+import time
 
 def home() -> None:
     """
@@ -36,11 +37,9 @@ def btn_checklist() -> None:
     Exibe o botão para iniciar o checklist.
     Ao clicar, redireciona o usuário para a página de checklist.
     """
-    # Cria botão com ação de redirecionamento
-    btn = st.button("Iniciar Checklist", on_click=lambda: st.switch_page("./pages/2_Checklist.py"))
 
-    # Redundância de segurança: redireciona se o botão for clicado (caso o on_click falhe)
-    if btn:
+    # Botão para Abrir Checklist
+    if st.button("Abrir Checklist Diária"):
         st.switch_page("./pages/2_Checklist.py")
 
 
