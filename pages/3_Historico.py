@@ -1,5 +1,6 @@
+# Importando dependencias
 import streamlit as st
-import pandas as pd
+# Importando funções
 from components.auth import verifica_login  # Garante que só usuários logados vejam o histórico
 from utils.sqlUtils import sql_query, excluir_diario
 
@@ -16,13 +17,22 @@ def configura_pagina() -> None:
     )
 
 
+def estilizando_pagina() -> None:
+    """
+    Estilização da página Historico com variáveis separadas
+    """
+    with open('./style/variaveis.css') as vars_file, open('./style/historico_style.css') as style_file:
+        css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
+        st.markdown(css, unsafe_allow_html=True)
+
+
 def historico() -> None:
     """
     Renderiza a interface da página de histórico.
     Exibe uma mensagem introdutória e, futuramente, os registros preenchidos pelos usuários.
     """
     st.markdown("# Histórico de Checklists")
-    st.markdown("Aqui você pode visualizar o histórico de atividades realizadas no sistema.")
+    st.markdown("###### Aqui você pode visualizar o histórico de atividades realizadas no sistema.")
 
     try:
         # Tenta carregar as respostas salvas anteriormente
@@ -46,7 +56,7 @@ def historico() -> None:
         st.exception(e)
     
     # Botão para o desenvolvimento
-    if st.button(":material/delete: Excluir Registro Diário"):
+    if st.button(":material/delete: Excluir Registro Diário", key="btn_excluir"):
         query = '''DELETE FROM respostas_checklist 
         WHERE DATE(data) = :hoje
         '''
@@ -62,6 +72,7 @@ def main() -> None:
     Verifica login, configura o layout e carrega o conteúdo da tela.
     """
     verifica_login()       # Garante que apenas usuários logados tenham acesso
+    estilizando_pagina()   # Fazendo a estilização do home
     configura_pagina()     # Aplica as configurações visuais da página
     historico()            # Carrega a interface do histórico
 

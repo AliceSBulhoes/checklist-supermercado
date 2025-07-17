@@ -21,7 +21,7 @@ def configura_pagina() -> None:
 
 def estilizando_pagina() -> None:
     """
-    Estilização da página Home com variáveis separadas
+    Estilização da página Checklist com variáveis separadas
     """
     with open('./style/variaveis.css') as vars_file, open('./style/checklist_style.css') as style_file:
         css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
