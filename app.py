@@ -16,17 +16,24 @@ def login() -> bool:
     st.title("Login")
 
     # Inputs do usuário
-    nome = st.text_input("Nome do usuário")
-    cargo = st.text_input("Cargo")
+    nome = st.text_input("Nome do usuário", key='input_login_1')
+    cargo = st.text_input("Cargo", key='input_login_2')
 
     # Verifica se cliclou no botãoi
-    if st.button("Entrar"):
+    if st.button("Entrar", key="btn_entrar"):
         # Verifica os campos
         if verificar_usuario(nome, cargo): 
             return True
 
     return False
 
+def estilizando_pagina() -> None:
+    """
+    Estilização da página de Login com variáveis separadas
+    """
+    with open('./style/variaveis.css') as vars_file, open('./style/app_style.css') as style_file:
+        css = f"<style>{vars_file.read()}\n{style_file.read()}</style>"
+        st.markdown(css, unsafe_allow_html=True)
 
 def verificar_usuario(nome: str, cargo: str) -> bool:
     """
@@ -80,8 +87,8 @@ def configura_pagina() -> None:
     st.set_page_config(
         page_title="Login - Checklist Streamlit",
         page_icon=":clipboard:",
-        layout="centered",
-        initial_sidebar_state="expanded"
+        initial_sidebar_state="collapsed",
+        layout="centered"
     )
 
 
@@ -90,13 +97,13 @@ def main() -> None:
     Função principal da aplicação.
     Verifica se o usuário já está logado e redireciona para a home, ou exibe o formulário de login.
     """
-    configura_pagina()
-    criar_tabelas()
-
     # Se o usuário já estiver logado, redireciona para a home
     if st.session_state.get('logged_in'):
         st.switch_page("./pages/1_Home.py")
     else:
+        configura_pagina()
+        estilizando_pagina()
+        criar_tabelas()
         login()
 
 

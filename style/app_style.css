@@ -1,0 +1,100 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.stMain{
+    background: var(--cor-paleta-100);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stMainBlockContainer {
+    background-color: var(--cor-paleta-200);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stVerticalBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+[data-testid="stWidgetLabel"] p{
+    text-transform: uppercase;
+    color: var(--cor-paleta-300);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.stElementContainer {
+     width: 90%;
+}
+
+.stButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login{
+    width: 100%;
+    text-align: center;
+    color: var(--cor-paleta-400);
+    text-transform: uppercase;
+}
+
+[data-baseweb="base-input"], [data-testid="stTextInputRootElement"]{
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.st-key-input_login_2 input, .st-key-input_login_1 input {
+    background-color: var(--cor-paleta-400);
+    border: 2px solid var(--cor-paleta-100);
+    color: var(--cor-paleta-100);
+    border-radius: 0.5rem;
+}
+
+.st-key-input_login_2 input:focus, .st-key-input_login_1 input:focus {
+    background-color: var(--cor-paleta-300);
+    border: 2px solid var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    border-radius: 0.5rem;
+}
+
+.st-key-btn_entrar button {
+    padding: 0.8rem 2.5rem;
+    background-color: var(--cor-paleta-100);
+    transition: all 0.5s;
+    color: var(--cor-paleta-300);
+}
+
+.st-key-btn_entrar p {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.st-key-btn_entrar button:hover{
+    border: var(--cor-paleta-100) 2px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: all 0.5s;
+
+}
+
+.st-key-btn_entrar button:focus:not(:active){
+    border: var(--cor-paleta-100) 2px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: all 0.5s;
+
+}
