@@ -1,9 +1,11 @@
+/* Estilo Global */
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Container Principal */
 .stMain{
     background: var(--cor-paleta-100);
     display: flex;
@@ -27,28 +29,16 @@
     gap: 1.5rem;
 }
 
+.stElementContainer {
+     width: 90%;
+}
+
+/* Inputs */
 [data-testid="stWidgetLabel"] p{
     text-transform: uppercase;
     color: var(--cor-paleta-300);
     font-weight: bold;
     font-size: 1.1rem;
-}
-
-.stElementContainer {
-     width: 90%;
-}
-
-.stButton{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#login{
-    width: 100%;
-    text-align: center;
-    color: var(--cor-paleta-400);
-    text-transform: uppercase;
 }
 
 [data-baseweb="base-input"], [data-testid="stTextInputRootElement"]{
@@ -71,6 +61,14 @@
     border-radius: 0.5rem;
 }
 
+
+/* Botão de Entrar */
+.stButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .st-key-btn_entrar button {
     padding: 0.8rem 2.5rem;
     background-color: var(--cor-paleta-100);
@@ -82,6 +80,7 @@
     text-transform: uppercase;
     font-weight: bold;
 }
+
 
 .st-key-btn_entrar button:hover{
     border: var(--cor-paleta-100) 2px solid;
@@ -98,3 +97,12 @@
     transition: all 0.5s;
 
 }
+
+/* Texto do Login */
+#login{
+    width: 100%;
+    text-align: center;
+    color: var(--cor-paleta-400);
+    text-transform: uppercase;
+}
+
