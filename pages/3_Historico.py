@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from components.auth import verifica_login  # Garante que só usuários logados vejam o histórico
-from utils.sqlUtils import sql_query
+from utils.sqlUtils import sql_query, excluir_diario
 
 def configura_pagina() -> None:
     """
@@ -44,6 +44,16 @@ def historico() -> None:
     except Exception as e:
         st.error("Erro ao carregar o histórico.")
         st.exception(e)
+    
+    # Botão para o desenvolvimento
+    if st.button("Excluir Registro diário"):
+        query = '''DELETE FROM respostas_checklist 
+        WHERE DATA(data) = :hoje
+        '''
+         
+        excluir_diario(query)
+
+
 
 
 def main() -> None:

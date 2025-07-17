@@ -13,6 +13,16 @@ engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread"
 if not os.path.exists(DB_PATH):
     open(DB_PATH, 'w').close()
 
+def excluir_diario(query: str) -> None:
+    """
+    Função para excluir registro diário para desenvolvimento
+    """
+    hoje = datetime.now().strftime("%Y-%m-%d")
+
+    with engine.begin() as conn:
+        conn.execute(text(query), {'hoje' : hoje})
+
+
 def sql_query(query: str) -> pd.DataFrame:
     """
     Executa queries comuns e retorna DataFrame
