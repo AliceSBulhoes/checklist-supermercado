@@ -14,8 +14,8 @@ def configura_pagina() -> None:
     Inclui o título, ícone, layout e estado inicial da barra lateral.
     """
     st.set_page_config(
-        page_title="Checklist - Checklist Streamlit",
-        page_icon=":clipboard:",
+        page_title="Checklist Diário",
+        page_icon=":material/check_box:",
         layout="centered",
     )
 
@@ -26,8 +26,8 @@ def checklist() -> None:
     Permite que o usuário marque itens, adicione comentários, envie imagens
     e salve os dados, após validação obrigatória da imagem.
     """
-    st.title("Checklist de Tarefas")
-    st.write("Marque os itens concluídos, adicione comentários e carregue a imagem obrigatória.")
+    st.markdown("# Checklist de Tarefas")
+    st.markdown("Marque os itens concluídos, adicione comentários e carregue a imagem obrigatória.")
 
     # Verifica se já existe checklist do dia
     if verificar_checklist_hoje():

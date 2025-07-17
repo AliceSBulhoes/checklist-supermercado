@@ -8,12 +8,12 @@ def home() -> None:
     Exibe a página inicial após o login.
     Mostra uma mensagem de boas-vindas, o cargo do usuário e o botão para iniciar o checklist.
     """
-    st.title("Página Inicial")
-    st.write("Bem-vindo(a) ao sistema!")
+    st.markdown("# Página Inicial")
+    st.markdown(f"#### Bem-vindo(a) ao sistema, **{st.session_state['nome']}**!")
 
     # Exibe o cargo do usuário se estiver salvo na sessão
     if 'cargo' in st.session_state:
-        st.write(f"Cargo: {st.session_state['cargo']}")
+        st.markdown(f"##### :material/work: **Cargo**: {st.session_state['cargo']}")
 
     # Exibe o botão para iniciar o checklist
     btn_checklist()
@@ -25,8 +25,8 @@ def configura_pagina() -> None:
     Define título, ícone, layout e estado da barra lateral.
     """
     st.set_page_config(
-        page_title="Página Inicial - Checklist Streamlit",
-        page_icon=":clipboard:",
+        page_title="Home",
+        page_icon=":material/home:",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -39,7 +39,7 @@ def btn_checklist() -> None:
     """
 
     # Botão para Abrir Checklist
-    if st.button("Abrir Checklist Diária"):
+    if st.button(":material/open_in_new: Abrir Checklist Diária"):
         st.switch_page("./pages/2_Checklist.py")
 
 

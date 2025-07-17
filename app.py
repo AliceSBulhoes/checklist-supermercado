@@ -16,8 +16,8 @@ def login() -> bool:
     st.title("Login")
 
     # Inputs do usuário
-    nome = st.text_input("Nome do usuário", key='input_login_1')
-    cargo = st.text_input("Cargo", key='input_login_2')
+    nome = st.text_input(":material/person: Nome do usuário", key='input_login_1')
+    cargo = st.text_input(":material/work: Cargo", key='input_login_2')
 
     # Verifica se cliclou no botãoi
     if st.button("Entrar", key="btn_entrar"):
@@ -85,8 +85,8 @@ def configura_pagina() -> None:
     Define título, ícone, layout e estado da barra lateral.
     """
     st.set_page_config(
-        page_title="Login - Checklist Streamlit",
-        page_icon=":clipboard:",
+        page_title="Login",
+        page_icon=":material/login:",
         initial_sidebar_state="collapsed",
         layout="centered"
     )

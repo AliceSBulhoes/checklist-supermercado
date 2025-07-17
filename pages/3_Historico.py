@@ -9,8 +9,8 @@ def configura_pagina() -> None:
     Inclui título, ícone, layout e estado da barra lateral.
     """
     st.set_page_config(
-        page_title="Histórico - Checklist Streamlit",
-        page_icon=":clipboard:",
+        page_title="Histórico",
+        page_icon=":material/view_cozy:",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -21,8 +21,8 @@ def historico() -> None:
     Renderiza a interface da página de histórico.
     Exibe uma mensagem introdutória e, futuramente, os registros preenchidos pelos usuários.
     """
-    st.title("Histórico de Checklists")
-    st.write("Aqui você pode visualizar o histórico de atividades realizadas no sistema.")
+    st.markdown("# Histórico de Checklists")
+    st.markdown("Aqui você pode visualizar o histórico de atividades realizadas no sistema.")
 
     try:
         # Tenta carregar as respostas salvas anteriormente
@@ -46,7 +46,7 @@ def historico() -> None:
         st.exception(e)
     
     # Botão para o desenvolvimento
-    if st.button("Excluir Registro diário"):
+    if st.button(":material/delete: Excluir Registro Diário"):
         query = '''DELETE FROM respostas_checklist 
         WHERE DATE(data) = :hoje
         '''
