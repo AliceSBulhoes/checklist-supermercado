@@ -106,3 +106,62 @@
     transition: ease 0.5s;
 
 }
+
+/* Texto do Sidebar */
+[data-testid="stSidebarContent"]  h1{
+    font-family: var(--font-mont);
+    color: var(--cor-paleta-100);
+}
+
+
+/* Sidebar */
+[data-testid="stSidebarUserContent"] [data-testid="stVerticalBlock"] {
+    display: flex;
+    gap: 2rem;
+}
+
+[data-testid="stSidebarUserContent"] h1 {
+    color: var(--cor-paleta-300);
+    font-family: var(--font-mont);
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+[data-testid="stSidebarUserContent"] [class="stPageLink"] a p{
+    color: var(--cor-paleta-300);
+    font-family: var(--font-mont);
+    text-transform: capitalize;
+    font-size: 1.1rem;
+    font-weight: 350;
+}
+
+[data-testid="stSidebarUserContent"] [data-testid="stButton"] div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Botão de Sair */
+[data-testid="stSidebarUserContent"] [data-testid="stButton"] button{
+    border: 1px solid var(--cor-paleta-300);
+    padding: 0.2rem 0.8rem;
+    background-color: var(--cor-paleta-100);
+    transition: all 0.5s;
+    color: var(--cor-paleta-300);
+}
+
+[data-testid="stSidebarUserContent"] [data-testid="stButton"] button:hover{
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+}
+
+[data-testid="stSidebarUserContent"] [data-testid="stButton"] button:focus:not(:active){
+    border: var(--cor-paleta-100) 1px solid;
+    background-color: var(--cor-paleta-400);
+    color: var(--cor-paleta-100);
+    transition: ease 0.5s;
+
+}

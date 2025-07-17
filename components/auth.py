@@ -11,7 +11,7 @@ def btn_logout() -> None:
     """
     Botão de logout na barra lateral.
     """
-    btn = st.sidebar.button(":material/logout: Sair do Sistema")
+    btn = st.sidebar.button(":material/logout: Sair do Sistema", key="btn_sair")
     if btn:
         st.session_state.clear()
         st.switch_page("./app.py")
