@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 # Importando funções
 from utils.sqlUtils import sql_query, salvar_respostas, verificar_checklist_hoje
+from components.auth import verifica_login
 
 def configura_pagina() -> None:
     """
@@ -46,31 +47,42 @@ def checklist() -> None:
     respostas = [renderizar_item(row) for _, row in df_itens.iterrows()]
 
     if st.button("Salvar Checklist"):
-            respostas = list(st.session_state.get("respostas_checklist", {}).values())
+        respostas_validas = []
+        inconsistentes = []
 
-            # Filtra apenas os válidos (feito e imagem existe)
-            respostas_validas = [
-                r for r in respostas
-                if r.get("feito") and r.get("imagem_path") and os.path.exists(r.get("imagem_path"))
-            ]
+        for r in respostas:
+            feito = r.get("feito", False)
+            imagem_path = r.get("imagem_path", "")
+            imagem_existe = imagem_path and os.path.exists(imagem_path)
 
-            if not respostas_validas:
-                st.warning("Nenhum item marcado como feito com imagem encontrada.")
-            else:
-                try:
-                    salvar_respostas(respostas_validas)
-                    
-                    # Verifica se completou todos os itens
-                    df_itens = carregar_itens_checklist()
-                    if df_itens is not None and len(respostas_validas) >= len(df_itens):
-                        st.success("Checklist completo salvo com sucesso!")
-                        time.sleep(2)
-                        st.switch_page('./pages/1_Home.py')
-                    else:
-                        st.success(f"Itens salvos ({len(respostas_validas)}/{len(df_itens)}) - Continue preenchendo o checklist!")
-                        
-                except Exception as e:
-                    st.error(f"Erro ao salvar checklist: {e}")
+            if feito and imagem_existe:
+                respostas_validas.append(r)
+            elif feito and not imagem_existe:
+                inconsistentes.append(f"Item '{r.get('descricao')}' marcado como feito, mas sem imagem.")
+            elif not feito and imagem_existe:
+                inconsistentes.append(f"Item '{r.get('descricao')}' tem imagem, mas não foi marcado como feito.")
+
+        if inconsistentes:
+            st.warning("Existem inconsistências no checklist:")
+            for msg in inconsistentes:
+                st.write(f"- {msg}")
+        elif not respostas_validas:
+            st.warning("Nenhum item válido para salvar.")
+        else:
+            try:
+                salvar_respostas(respostas_validas)
+
+                df_itens = carregar_itens_checklist()
+                if df_itens is not None and len(respostas_validas) >= len(df_itens):
+                    st.success("Checklist completo salvo com sucesso!")
+                    time.sleep(2)
+                    st.switch_page('./pages/1_Home.py')
+                else:
+                    st.success(f"Itens salvos ({len(respostas_validas)}/{len(df_itens)}) - Continue preenchendo o checklist!")
+            except Exception as e:
+                st.error(f"Erro ao salvar checklist: {e}")
+
+
 
 
 def carregar_itens_checklist() -> pd.DataFrame:
@@ -97,7 +109,25 @@ def renderizar_item(row: pd.Series) -> dict:
     Renderiza um único item do checklist com opções interativas.
     """
     item_id = row['id_itens_checklist']
-    estado_antigo = st.session_state.get("respostas_checklist", {}).get(item_id, {})
+
+    nome = st.session_state.get("nome", "desconhecido")
+    cargo = st.session_state.get("cargo", "").lower()
+    hoje = datetime.now().strftime("%Y-%m-%d")
+
+
+    query = f"""
+    SELECT rc.feito, rc.comentario, rc.imagem_path
+    FROM respostas_checklist rc
+    JOIN funcionarios f ON rc.id_funcionarios = f.id_funcionario
+    JOIN itens_checklist ic ON rc.id_itens_checklist = ic.id_itens_checklist
+    WHERE f.nome = '{nome}'
+    AND LOWER(ic.cargo) = '{cargo}'
+    AND DATE(rc.data) = '{hoje}'
+    AND rc.id_itens_checklist = '{item_id}'
+    """
+
+    resultado = sql_query(query)
+    estado_antigo = resultado.iloc[0].to_dict() if not resultado.empty else {}
 
     with st.expander(row['descricao']):
         # Checkbox para marcar como feito
@@ -116,35 +146,33 @@ def renderizar_item(row: pd.Series) -> dict:
                 key=f"input_{item_id}"
             )
 
-        # Upload obrigatório
-        imagem = st.file_uploader(
-            "Carregar imagem (obrigatória)",
-            type=["jpg", "png"],
-            key=f"image_{item_id}"
-        )
+        # Se já tem imagem salva, exibe ela
+        if estado_antigo.get("imagem_path", ""):
+            st.image(estado_antigo["imagem_path"], width=200, caption="Imagem enviada anteriormente")
+            caminho_arquivo = estado_antigo["imagem_path"]
 
-        pasta_destino = ""
-        nome_arquivo = ""
-        caminho_arquivo = ""
-
-        if imagem is not None:
-            # Cria pasta com data atual para organizar as imagens
-            data_atual = datetime.now().strftime("%Y-%m-%d")
-            pasta_destino = f"./assets/image/{data_atual}/{st.session_state['nome']}-{st.session_state['cargo']}"
-            os.makedirs(pasta_destino, exist_ok=True)
-            extensao = os.path.splitext(imagem.name)[1]
-            nome_arquivo = f"image_{item_id}_{st.session_state['nome']}{extensao}"
-            caminho_arquivo = os.path.join(pasta_destino, nome_arquivo)
-            with open(caminho_arquivo, "wb") as f:
-                f.write(imagem.read())
+        # Se não tem, exige upload
         else:
-            caminho_arquivo = estado_antigo.get("imagem_path", "")
+            imagem = st.file_uploader(
+                "Carregar imagem (obrigatória)",
+                type=["jpg", "png"],
+                key=f"image_{item_id}"
+            )
 
-        # Atualiza no session_state
-        if "respostas_checklist" not in st.session_state:
-            st.session_state["respostas_checklist"] = {}
+            caminho_arquivo = ""
+            if imagem is not None:
+                data_atual = datetime.now().strftime("%Y-%m-%d")
+                pasta_destino = f"./assets/image/{data_atual}/{st.session_state['nome']}-{st.session_state['cargo']}"
+                os.makedirs(pasta_destino, exist_ok=True)
 
-        st.session_state["respostas_checklist"][item_id] = {
+                extensao = os.path.splitext(imagem.name)[1]
+                nome_arquivo = f"image_{item_id}_{st.session_state['nome']}{extensao}"
+                caminho_arquivo = os.path.join(pasta_destino, nome_arquivo)
+
+                with open(caminho_arquivo, "wb") as f:
+                    f.write(imagem.read())
+
+        return {
             "id_itens_checklist": item_id,
             "descricao": row['descricao'],
             "feito": feito,
@@ -152,16 +180,13 @@ def renderizar_item(row: pd.Series) -> dict:
             "imagem_path": caminho_arquivo
         }
 
-        return st.session_state["respostas_checklist"][item_id]
 
 
 def main():
     """ Função principal do aplicativo. Garante que o usuário esteja logado antes de exibir a checklist."""
+    verifica_login()       # Garante que apenas usuários logados tenham acesso
     configura_pagina()
-    if st.session_state.get('logged_in'):
-        checklist()
-    else:
-        st.switch_page("./app.py")
+    checklist()
 
 
 if __name__ == "__main__":

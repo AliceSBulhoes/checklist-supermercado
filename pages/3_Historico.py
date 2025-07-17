@@ -48,7 +48,7 @@ def historico() -> None:
     # Botão para o desenvolvimento
     if st.button("Excluir Registro diário"):
         query = '''DELETE FROM respostas_checklist 
-        WHERE DATA(data) = :hoje
+        WHERE DATE(data) = :hoje
         '''
          
         excluir_diario(query)
