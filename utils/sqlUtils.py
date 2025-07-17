@@ -4,9 +4,29 @@ import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine, text
 import os
+import shutil
 
-# Configuração do banco de dados para o Streamlit Cloud
-DB_PATH = os.path.join(os.getcwd(), "checklist.db")
+import os
+import shutil
+
+# Caminho original do banco no projeto
+ORIGINAL_DB_PATH = os.path.join(os.getcwd(), "checklist.db")
+
+# Verifica se está no Streamlit Cloud
+is_streamlit_cloud = os.environ.get("STREAMLIT_ENV") == "cloud" or "HOME" in os.environ and "/home/appuser" in os.environ.get("HOME", "")
+
+# Define caminho correto com base no ambiente
+if is_streamlit_cloud:
+    TEMP_DB_PATH = "/tmp/checklist.db"
+    # Copia para /tmp se necessário
+    if not os.path.exists(TEMP_DB_PATH):
+        shutil.copy(ORIGINAL_DB_PATH, TEMP_DB_PATH)
+    DB_PATH = TEMP_DB_PATH
+else:
+    # No local, usa o original mesmo
+    DB_PATH = ORIGINAL_DB_PATH
+
+# Agora sim cria a engine com o caminho certo
 engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
 
 # Garante que o arquivo existe
