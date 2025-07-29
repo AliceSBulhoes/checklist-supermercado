@@ -57,7 +57,6 @@ def historico() -> None:
                 st.info("Você ainda não tem checklists salvos.")
                 return
 
-            # --- Adição do filtro por dia ---
             # Extrai todas as datas únicas para o seletor
             all_dates = df['data'].dt.date.unique()
             # Ordena as datas em ordem decrescente (mais recente primeiro)
@@ -67,7 +66,7 @@ def historico() -> None:
                 # Usa a data mais recente como valor padrão
                 default_date = all_dates_sorted[0]
             else:
-                default_date = date.today() # Fallback if no dates are found
+                default_date = date.today()
 
             # Widget de seleção de data
             selected_date = st.date_input("Selecione a data para filtrar:",key="filtro" ,value=default_date, min_value=min(all_dates_sorted) if all_dates_sorted else None, max_value=max(all_dates_sorted) if all_dates_sorted else None)

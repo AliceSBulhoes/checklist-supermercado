@@ -199,7 +199,7 @@ def tabela_funcionarios() -> None:
                     VALUES (:nome, :cargo)
                 """), pessoa)
 
-def tabela_itens_checklist():
+def tabela_itens_checklist() -> None:
     """
     Cria a tabela 'itens_checklist' com dados default (uma vez)
     """
@@ -245,9 +245,9 @@ def tabela_itens_checklist():
                         VALUES (:cargo, :descricao)
                     """), {"cargo": cargo, "descricao": descricao})
 
-def tabela_respostas_checklist():
+def tabela_respostas_checklist() -> None:
     """
-    Cria a tabela 'respostas_checklist' (uma vez
+    Cria a tabela 'respostas_checklist' (uma vez)
     """
 
     query_criacao = '''
