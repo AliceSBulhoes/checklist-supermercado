@@ -94,7 +94,7 @@
 /* Bloco dos Cards */
 [data-testid="stExpander"]  .stVerticalBlock{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-content: center;
 }
 
