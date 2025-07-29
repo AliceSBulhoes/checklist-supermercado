@@ -90,3 +90,70 @@
     transition: ease 0.5s;
 
 }
+
+/* Bloco dos Cards */
+[data-testid="stExpander"]  .stVerticalBlock{
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
+
+[data-testid="stExpander"] details{
+    border: 2px solid var(--cor-paleta-200);
+}
+
+[data-testid="stExpander"] p{
+    font-family: var(--font-mont);
+    color: var(--cor-paleta-300);
+    font-size: 1rem;
+}
+
+[data-testid="stExpander"] svg[data-testid="stExpanderToggleIcon"]{
+    fill: var(--cor-paleta-300);
+}
+
+/* Imagem Enviada*/
+[data-testid="stExpander"] [data-testid="stImageContainer"]{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    width: 80%;
+
+}
+
+[data-testid="stExpander"] [data-testid="stImageContainer"] p{
+    color: var(--cor-paleta-500);
+    text-align: center;
+    width: 100%;
+}
+
+/* Filtro */
+.st-key-filtro input {
+    background-color: var(--cor-paleta-400);
+    border: 2px solid var(--cor-paleta-200);
+    color: var(--cor-paleta-100);
+    border-radius: 0.5rem;
+    font-family: var(--font-mont);
+    font-weight: 400;
+}
+
+.st-key-filtro:focus {
+    background-color: var(--cor-paleta-300);
+    border: 2px solid var(--cor-paleta-300);
+    color: var(--cor-paleta-100);
+    border-radius: 0.5rem;
+}
+
+[data-baseweb="input"], [data-testid="stTextInputRootElement"]{
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+[data-baseweb="popover"] [aria-roledescription="button"]::after{
+    background-color: var(--cor-paleta-200);
+}
+
+[role="presentation"] div{
+    color: var(--cor-paleta-300);
+}

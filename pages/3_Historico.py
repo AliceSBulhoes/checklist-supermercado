@@ -1,5 +1,7 @@
 # Importando dependencias
 import streamlit as st
+import pandas as pd
+from datetime import date 
 # Importando funções
 from components.auth import verifica_login  # Garante que só usuários logados vejam o histórico
 from utils.sqlUtils import sql_query, excluir_diario
@@ -43,14 +45,66 @@ def historico() -> None:
 
         df = sql_query(query)
 
+        df['data'] = pd.to_datetime(df['data'])
+
         if df.empty:
             st.info("Ainda não há checklists salvos.")
         else:
-            # Filtro para apenas o funcionário logado
-            df = df[df['nome'] == st.session_state['nome']]
-            # Exibe a tabela de registros
-            st.dataframe(df)
+            if 'nome' in st.session_state:
+                df = df[df['nome'] == st.session_state['nome']]
+            
+            if df.empty:
+                st.info("Você ainda não tem checklists salvos.")
+                return
 
+            # --- Adição do filtro por dia ---
+            # Extrai todas as datas únicas para o seletor
+            all_dates = df['data'].dt.date.unique()
+            # Ordena as datas em ordem decrescente (mais recente primeiro)
+            all_dates_sorted = sorted(all_dates, reverse=True)
+
+            if all_dates_sorted:
+                # Usa a data mais recente como valor padrão
+                default_date = all_dates_sorted[0]
+            else:
+                default_date = date.today() # Fallback if no dates are found
+
+            # Widget de seleção de data
+            selected_date = st.date_input("Selecione a data para filtrar:",key="filtro" ,value=default_date, min_value=min(all_dates_sorted) if all_dates_sorted else None, max_value=max(all_dates_sorted) if all_dates_sorted else None)
+
+            # Filtra o DataFrame pela data selecionada
+            filtered_df = df[df['data'].dt.date == selected_date]
+
+            if filtered_df.empty:
+                st.info(f"Não há checklists para a data selecionada: **{selected_date.strftime('%d/%m/%Y')}**.")
+                return
+
+            # Ordena o DataFrame filtrado pela data para garantir uma ordem consistente
+            filtered_df = filtered_df.sort_values(by='data', ascending=False) # Ordem decrescente (mais recente primeiro)
+
+            # Cabeçalho para o dia selecionado (opcional, pode ser removido se o título principal for suficiente)
+            st.markdown(f'### Checklists para {selected_date.strftime("%d/%m/%Y")}')
+            
+            for index, row in filtered_df.iterrows():
+                data_formatada_hora = row['data'].strftime("%H:%M:%S")
+                
+                with st.expander(f"**{row['descricao']}** - {data_formatada_hora}"):
+                    # Crie duas colunas dentro do expander
+                    col_info, col_imagem = st.columns([2, 1]) # 2 partes para info, 1 para imagem (ajuste conforme necessário)
+
+                    with col_info:
+                        st.markdown(f"**Funcionário:** {row['nome']}")
+                        st.markdown(f"**Cargo:** {row['cargo']}")
+                        st.markdown(f"**Descrição:** {row['descricao']}")
+                        st.markdown(f"**Feito:** {'Sim' if row['feito'] else 'Não'}")
+                        if row['comentario']:
+                            st.markdown(f"**Comentário:** {row['comentario']}")
+                    
+                    with col_imagem:
+                        if row['imagem_path'] and row['imagem_path'] != "":
+                            st.image(row['imagem_path'], caption="Imagem do Checklist", use_container_width =True)
+                        else:
+                            st.info("Nenhuma imagem para este checklist.")
     except Exception as e:
         st.error("Erro ao carregar o histórico.")
         st.exception(e)
@@ -60,11 +114,8 @@ def historico() -> None:
         query = '''DELETE FROM respostas_checklist 
         WHERE DATE(data) = :hoje
         '''
-         
+        
         excluir_diario(query)
-
-
-
 
 def main() -> None:
     """
